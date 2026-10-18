@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="OnlineCoursesApp.Monolith.Application/OnlineCoursesApp.Monolith.Application.csproj" />
+    <Project Path="OnlineCoursesApp.Monolith.Domain/OnlineCoursesApp.Monolith.Domain.csproj" />
+    <Project Path="OnlineCoursesApp.Monolith.Infrastructure/OnlineCoursesApp.Monolith.Infrastructure.csproj" />
+    <Project Path="OnlineCoursesApp.Monolith.WebApi/OnlineCoursesApp.Monolith.WebApi.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="OnlineCoursesApp.Monolith.UnitTests/OnlineCoursesApp.Monolith.UnitTests.csproj" />
+  </Folder>
+</Solution>
