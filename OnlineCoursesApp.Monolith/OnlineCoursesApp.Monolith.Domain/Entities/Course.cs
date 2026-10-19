@@ -16,4 +16,5 @@ public class Course
     public DateTimeOffset CreatedAt { get; set; }
 
     public ICollection<LessonMaterial> Materials = new List<LessonMaterial>();
+    public ICollection<Enrollment> Enrollments = new List<Enrollment>();
 }
