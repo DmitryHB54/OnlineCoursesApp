@@ -1,5 +1,7 @@
-﻿namespace OnlineCoursesApp.Monolith.Infrastructure.Persistence;
-public class UnitOfWork(AppDbContext dbContext)
+﻿using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
+
+namespace OnlineCoursesApp.Monolith.Infrastructure.Persistence;
+public class UnitOfWork(AppDbContext dbContext) : IUnitOfWork
 {
     public Task<int> SaveChangesAsync(CancellationToken ct)
         => dbContext.SaveChangesAsync(ct);
