@@ -11,7 +11,8 @@ public class LoginCommandHandler(
     IUserRepository userRepository,
     IUnitOfWork unitOfWork,
     IPasswordHasher<User> passwordHasher,
-    IJwtTokenService jwtTokenService) : IRequestHandler<LoginCommand, AuthResponseDto>
+    IJwtTokenService jwtTokenService,
+    IRefreshTokenService refreshTokenService) : IRequestHandler<LoginCommand, AuthResponseDto>
 {
     public async Task<AuthResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
@@ -25,7 +26,13 @@ public class LoginCommandHandler(
         if (verification == PasswordVerificationResult.Failed)
             throw new ForbiddenException("Password or email is invlaid");
 
-        var (token, expiresAt) = jwtTokenService.Generate(user);
-        return new AuthResponseDto(token, expiresAt);
+        var (accessToken, accessExpiresAt) = jwtTokenService.Generate(user);
+        var (rawRefresh, refreshEntity) = await refreshTokenService.CreateAsync(user.Id, cancellationToken);
+
+        return new AuthResponseDto(
+            accessToken,
+            accessExpiresAt,
+            rawRefresh,
+            refreshEntity.ExpiresAt);
     }
 }

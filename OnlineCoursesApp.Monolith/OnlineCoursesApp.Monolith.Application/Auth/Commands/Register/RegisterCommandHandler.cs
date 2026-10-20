@@ -12,8 +12,8 @@ public class RegisterCommandHandler(
     IRoleRepository roleRepositiry,
     IUnitOfWork unitOfWork,
     IPasswordHasher<User> passwordHasher,
-    IJwtTokenService jwtService
-    ) : IRequestHandler<RegisterCommand, AuthResponseDto>
+    IJwtTokenService jwtTokenService,
+    IRefreshTokenService refreshTokenService) : IRequestHandler<RegisterCommand, AuthResponseDto>
 {
     public async Task<AuthResponseDto> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
@@ -38,7 +38,13 @@ public class RegisterCommandHandler(
         await userRepository.AddAsync(user, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        var (token, expiresAt) = jwtService.Generate(user);
-        return new AuthResponseDto(token, expiresAt);
+        var (accessToken, accessExpiresAt) = jwtTokenService.Generate(user);
+        var (rawRefresh, refreshEntity) = await refreshTokenService.CreateAsync(user.Id, cancellationToken);
+
+        return new AuthResponseDto(
+            accessToken,
+            accessExpiresAt,
+            rawRefresh,
+            refreshEntity.ExpiresAt);
     }
 }

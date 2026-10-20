@@ -45,7 +45,7 @@ namespace OnlineCoursesApp.Monolith.Infrastructure.Migrations
                         .HasColumnType("character varying(5000)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("numeric{12, 2}");
+                        .HasColumnType("numeric(18, 2)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -112,6 +112,45 @@ namespace OnlineCoursesApp.Monolith.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("lesson_materials", (string)null);
+                });
+
+            modelBuilder.Entity("OnlineCoursesApp.Monolith.Domain.Entities.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ReplacedByTokenHash")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("RevokedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("refresh_tokens", (string)null);
                 });
 
             modelBuilder.Entity("OnlineCoursesApp.Monolith.Domain.Entities.Role", b =>
@@ -262,6 +301,17 @@ namespace OnlineCoursesApp.Monolith.Infrastructure.Migrations
 
                     b.Navigation("FileInfo")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("OnlineCoursesApp.Monolith.Domain.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("OnlineCoursesApp.Monolith.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("OnlineCoursesApp.Monolith.Domain.Entities.User", b =>
