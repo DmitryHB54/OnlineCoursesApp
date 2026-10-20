@@ -8,6 +8,7 @@ public class AppDbContext : DbContext
 
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<Course> Cources => Set<Course>();
     public DbSet<LessonMaterial> LessonMaterials => Set<LessonMaterial>();
     public DbSet<Enrollment> Enrollments => Set<Enrollment>();
