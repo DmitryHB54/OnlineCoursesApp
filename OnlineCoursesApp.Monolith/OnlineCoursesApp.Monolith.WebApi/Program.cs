@@ -5,11 +5,16 @@ using OnlineCoursesApp.Monolith.Application;
 using OnlineCoursesApp.Monolith.Infrastructure;
 using OnlineCoursesApp.Monolith.Infrastructure.Auth;
 using OnlineCoursesApp.Monolith.WebApi.ExceptionHandling;
+using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
+using OnlineCoursesApp.Monolith.WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 var jwtSection = builder.Configuration.GetSection(JwtOptions.SectionName);
 var jwtKey = jwtSection["Key"] ?? throw new InvalidOperationException("Jwt:Key is not set.");

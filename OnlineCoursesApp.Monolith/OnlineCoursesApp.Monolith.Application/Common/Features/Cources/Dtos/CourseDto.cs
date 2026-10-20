@@ -9,4 +9,4 @@ public record CourseDto(
     Guid AuthorId,
     CourseCategory Category,
     decimal Price,
-    DateTime CreatedAt);
+    DateTimeOffset CreatedAt);
