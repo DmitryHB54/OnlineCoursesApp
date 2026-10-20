@@ -1,7 +1,11 @@
 using OnlineCoursesApp.Monolith.Application;
 using OnlineCoursesApp.Monolith.Infrastructure;
+using OnlineCoursesApp.Monolith.WebApi.ExceptionHandling;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -21,7 +25,12 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseExceptionHandler();
+
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 
 
