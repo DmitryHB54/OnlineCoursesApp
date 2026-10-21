@@ -7,6 +7,7 @@ using OnlineCoursesApp.Monolith.Infrastructure.Auth;
 using OnlineCoursesApp.Monolith.WebApi.ExceptionHandling;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.WebApi.Services;
+using OnlineCoursesApp.Monolith.WebApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,7 +44,7 @@ builder.Services.AddProblemDetails();
 
 builder.Services.AddControllers();
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerConfig();
 
 var app = builder.Build();
 
