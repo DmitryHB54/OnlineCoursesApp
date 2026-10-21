@@ -8,6 +8,7 @@ using OnlineCoursesApp.Monolith.Domain.Entities;
 using OnlineCoursesApp.Monolith.Infrastructure.Auth;
 using OnlineCoursesApp.Monolith.Infrastructure.Persistence;
 using OnlineCoursesApp.Monolith.Infrastructure.Persistence.Repositories;
+using OnlineCoursesApp.Monolith.Infrastructure.Storage;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure;
 public static class DependencyInjection
@@ -27,6 +28,9 @@ public static class DependencyInjection
         services.AddScoped<ICourseRepository, CourseRepository>();
         services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
         services.AddScoped<ILessonMaterialRepository, LessonMaterialRepository>();
+
+        services.Configure<StorageOptions>(configuration.GetSection(StorageOptions.SectionName));
+        services.AddScoped<IFileStorageService, FileStorageService>();
 
         services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>(); 
 

@@ -10,7 +10,6 @@ public class DownloadMaterialQueryHandler(
     ILessonMaterialRepository lessonMaterialRepository,
     IEnrollmentRepository enrollmentRepository,
     IFileStorageService fileStorageService,
-    IUnitOfWork unitOfWork,
     ICurrentUserService currentUserService) : IRequestHandler<DownloadMaterialQuery, DownloadMaterial>
 {
     public async Task<DownloadMaterial> Handle(DownloadMaterialQuery request, CancellationToken cancellationToken)
