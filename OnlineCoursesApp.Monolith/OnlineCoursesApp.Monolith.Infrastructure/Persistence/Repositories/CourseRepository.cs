@@ -13,6 +13,9 @@ public class CourseRepository(
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == id, ct);
 
+    public Task<Course?> GetByIdForUpdateAsync(Guid id, CancellationToken ct)
+        => dbContext.Cources.FirstOrDefaultAsync(c => c.Id == id, ct);
+
     public async Task<PagedResult<Course>> GetFilteredAsync(CourseFilter filter, CancellationToken ct)
     {
         var query = dbContext.Cources.AsNoTracking().AsQueryable();

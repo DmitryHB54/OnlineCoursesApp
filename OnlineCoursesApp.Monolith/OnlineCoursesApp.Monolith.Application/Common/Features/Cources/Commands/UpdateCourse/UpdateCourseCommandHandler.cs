@@ -12,7 +12,7 @@ public class UpdateCourseCommandHandler(
 {
     public async Task<CourseDto> Handle(UpdateCourseCommand request, CancellationToken cancellationToken)
     {
-        var course = await courseRepository.GetByIdAsync(request.Id, cancellationToken)
+        var course = await courseRepository.GetByIdForUpdateAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException("Course not found");
 
         if (currentUserService.Role == RoleName.Teacher && course.AuthorId != currentUserService.UserId)
