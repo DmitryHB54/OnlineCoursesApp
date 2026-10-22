@@ -5,6 +5,7 @@ namespace OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 public interface ICourseRepository
 {
     Task<Course?> GetByIdAsync(Guid id, CancellationToken ct);
+    Task<Course?> GetByIdForUpdateAsync(Guid id, CancellationToken ct);
     Task<PagedResult<Course>> GetFilteredAsync(CourseFilter filter, CancellationToken ct);
     Task AddAsync(Course course, CancellationToken ct);
     void Update(Course course);

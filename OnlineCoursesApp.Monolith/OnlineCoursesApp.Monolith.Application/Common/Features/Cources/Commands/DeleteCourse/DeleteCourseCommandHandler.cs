@@ -12,7 +12,7 @@ public class DeleteCourseCommandHandler(
 {
     public async Task<Unit> Handle(DeleteCourseCommand request, CancellationToken ct)
     {
-        var course = await courseRepository.GetByIdAsync(request.Id, ct)
+        var course = await courseRepository.GetByIdForUpdateAsync(request.Id, ct)
             ?? throw new NotFoundException("Course not found");
 
         if (currentUserService.Role == RoleName.Teacher && course.AuthorId != currentUserService.UserId)
