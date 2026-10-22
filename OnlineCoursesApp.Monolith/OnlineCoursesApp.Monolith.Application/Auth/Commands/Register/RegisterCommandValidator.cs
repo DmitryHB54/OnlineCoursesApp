@@ -21,8 +21,8 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
             .MaximumLength(200);
 
         RuleFor(c => c.Role)
-            .IsInEnum().WithMessage("Invalid role.")
-            .NotEqual(RoleName.Admin)
-            .WithMessage("Registration with admin role is prohibited.");
+            .IsInEnum().WithMessage("Invalid role.");
+            //.NotEqual(RoleName.Admin)
+            //.WithMessage("Registration with admin role is prohibited.");
     }
 }

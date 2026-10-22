@@ -1,4 +1,9 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".dockerignore" />
+    <File Path="docker-compose.yml" />
+    <File Path="Dockerfile" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="OnlineCoursesApp.Monolith.Application/OnlineCoursesApp.Monolith.Application.csproj" />
     <Project Path="OnlineCoursesApp.Monolith.Domain/OnlineCoursesApp.Monolith.Domain.csproj" />

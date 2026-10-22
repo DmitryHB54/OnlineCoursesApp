@@ -1,0 +1,38 @@
+services:
+  db-service:
+    image: postgres:16-alpine
+    container_name: online-cources-db
+    environment:
+      POSTGRES_DB: online_cources
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/dat
+    restart: unless-stopped
+
+  api-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: online-cources-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=Host=db-service;Port=5432;Database=online_cources;Username=postgres;Password=postgres
+      - Jwt__Key=super-secret-key-at-least-32-characters-long-for-hmacsha256
+      - Jwt__Issuer=OnlineLearning.Api
+      - Jwt__Audience=OnlineLearning.Client
+      - Jwt__ExpiryMinutes=15
+      - Storage__RootPath=/app/assets
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db-service
+    volumes:
+      - assets-volume:/app/assets
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  assets-volume:

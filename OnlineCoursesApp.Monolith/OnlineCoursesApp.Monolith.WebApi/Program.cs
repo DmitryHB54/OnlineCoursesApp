@@ -1,14 +1,16 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using OnlineCoursesApp.Monolith.Application;
+using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Infrastructure;
 using OnlineCoursesApp.Monolith.Infrastructure.Auth;
+using OnlineCoursesApp.Monolith.Infrastructure.Persistence;
 using OnlineCoursesApp.Monolith.WebApi.ExceptionHandling;
-using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
-using OnlineCoursesApp.Monolith.WebApi.Services;
 using OnlineCoursesApp.Monolith.WebApi.Extensions;
-using Microsoft.AspNetCore.Http.Features;
+using OnlineCoursesApp.Monolith.WebApi.Services;
+using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +57,12 @@ builder.Services.AddControllers();
 builder.Services.AddSwaggerConfig();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+}
 
 app.UseExceptionHandler();
 
