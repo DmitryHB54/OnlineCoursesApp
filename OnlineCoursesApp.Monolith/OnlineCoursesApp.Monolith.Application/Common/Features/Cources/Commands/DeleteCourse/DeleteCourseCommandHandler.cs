@@ -7,6 +7,7 @@ namespace OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Commands
 public class DeleteCourseCommandHandler(
     ICourseRepository courseRepository,
     ICurrentUserService currentUserService,
+    IFileStorageService fileStorageService,
     IUnitOfWork unitOfWork) : IRequestHandler<DeleteCourseCommand, Unit>
 {
     public async Task<Unit> Handle(DeleteCourseCommand request, CancellationToken ct)
@@ -17,6 +18,7 @@ public class DeleteCourseCommandHandler(
         if (currentUserService.Role == RoleName.Teacher && course.AuthorId != currentUserService.UserId)
             throw new ForbiddenException("You can't delete someone else's course");
 
+        await fileStorageService.DeleteCourseFolderAsync(course.Id, ct);
         courseRepository.Remove(course);
         await unitOfWork.SaveChangesAsync(ct);
 
