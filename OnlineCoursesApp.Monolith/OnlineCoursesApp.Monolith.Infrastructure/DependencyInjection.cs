@@ -35,6 +35,7 @@ public static class DependencyInjection
 
         services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
         services.AddScoped<ILessonMaterialRepository, LessonMaterialRepository>();
+        services.AddScoped<IReportRepository, ReportRepository>();
 
         services.Configure<StorageOptions>(configuration.GetSection(StorageOptions.SectionName));
         services.AddScoped<IFileStorageService, FileStorageService>();
