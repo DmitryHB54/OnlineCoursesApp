@@ -26,20 +26,14 @@ public class GetCoursesReportQueryHandler(
 
         var bytes = BuildCsv(rows);
 
-        var bom = Encoding.UTF8.GetPreamble();
-        var payload = new byte[bom.Length + bytes.Length];
-        Buffer.BlockCopy(bom, 0, payload, 0, bom.Length);
-        Buffer.BlockCopy(bytes, 0, payload, bom.Length, bytes.Length);
-
-        var fileName = $"courses-report-{DateTime.UtcNow:yyyyMMdd-HHmmss}.csv";
-        return new CoursesReportFile(payload, fileName, "text/csv; charset=utf-8");
+        var fileName = $"courses-report-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss-fff}.csv";
+        return new CoursesReportFile(bytes, fileName, "text/csv;");
     }
 
     private static byte[] BuildCsv(List<CourseReportRowDto> rows)
     {
-        using var stream = new MemoryStream();
-        using (var writer = new StreamWriter(stream, new UTF8Encoding(false), leaveOpen: true))
-        using (var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture) {  Delimiter = "," }))
+        using var stringWriter = new StringWriter();
+        using (var csv = new CsvWriter(stringWriter, new CsvConfiguration(CultureInfo.InvariantCulture) {  Delimiter = ";" }))
         {
             csv.WriteField("Title");
             csv.WriteField("AuthorEmail");
@@ -61,7 +55,16 @@ public class GetCoursesReportQueryHandler(
             }
         }
 
-        return stream.ToArray();
+        var csvString = stringWriter.ToString();
+
+        var contentBytes = Encoding.UTF8.GetBytes(csvString);
+        var bomBytes = Encoding.UTF8.GetPreamble();
+
+        var result = new byte[bomBytes.Length + contentBytes.Length];
+        Buffer.BlockCopy(bomBytes, 0, result, 0, bomBytes.Length);
+        Buffer.BlockCopy(contentBytes, 0, result, bomBytes.Length, contentBytes.Length);
+
+        return result;
     }
 
     private static string SafeCell(string value)

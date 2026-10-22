@@ -12,6 +12,7 @@ public class ReportsController(
 {
     [Authorize(Roles = "Admin,Teacher")]
     [HttpGet("courses")]
+    [ProducesResponseType(typeof(GetCoursesReportQuery), StatusCodes.Status200OK)]
     public async Task<IActionResult> CoursesReport([FromQuery] DateTime from,
         [FromQuery] DateTime to,
         CancellationToken ct)

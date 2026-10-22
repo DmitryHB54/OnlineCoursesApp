@@ -5,6 +5,7 @@ using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Commands.Cre
 using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Commands.DeleteCourse;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Commands.UpdateCourse;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Dtos;
+using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Queries.GetCourseArchive;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Queries.GetCourseById;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Queries.GetCourses;
 using OnlineCoursesApp.Monolith.Application.Models;
@@ -66,5 +67,16 @@ public class CourseController(IMediator mediator) : ControllerBase
     {
         await mediator.Send(new DeleteCourseCommand(id), cancellationToken);
         return NoContent();
+    }
+
+    [Authorize(Roles = "Admin,Teacher")]
+    [HttpGet("{id:guid}/archive")]
+    [ProducesResponseType(typeof(CourseArchiveFile), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> GetArchive(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new GetCourseArchiveQuery(id), cancellationToken);
+        return File(result.Content, result.ContentType, result.FileName);
     }
 }
