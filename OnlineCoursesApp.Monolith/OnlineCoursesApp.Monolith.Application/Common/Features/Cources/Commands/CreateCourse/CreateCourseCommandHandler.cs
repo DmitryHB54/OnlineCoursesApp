@@ -2,6 +2,7 @@
 using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Dtos;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Domain.Entities;
+using OnlineCoursesApp.Monolith.Domain.Repositories;
 
 namespace OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Commands.CreateCourse;
 

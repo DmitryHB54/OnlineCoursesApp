@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OnlineCoursesApp.Monolith.Application.Auth;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Domain.Entities;
+using OnlineCoursesApp.Monolith.Domain.Repositories;
 using OnlineCoursesApp.Monolith.Infrastructure.Auth;
 using OnlineCoursesApp.Monolith.Infrastructure.Persistence;
 using OnlineCoursesApp.Monolith.Infrastructure.Persistence.Decorators;
@@ -33,6 +34,9 @@ public static class DependencyInjection
         services.AddScoped<ICourseRepository, CourseRepository>();
         services.Decorate<ICourseRepository, LoggingCourseRepository>();
         services.Decorate<ICourseRepository, CachedCourseRepository>();
+
+        services.AddScoped<ICourseFilteredReadRepository, CourseFilteredReadRepository>();
+        services.Decorate<ICourseFilteredReadRepository, LoggingCourseFilteredReadRepository>();
 
         services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
         services.AddScoped<ILessonMaterialRepository, LessonMaterialRepository>();

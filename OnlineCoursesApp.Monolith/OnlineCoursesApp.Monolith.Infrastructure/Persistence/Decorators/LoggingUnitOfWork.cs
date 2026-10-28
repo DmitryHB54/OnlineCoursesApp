@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
+using OnlineCoursesApp.Monolith.Domain.Repositories;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure.Persistence.Decorators;
 

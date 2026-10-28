@@ -1,4 +1,4 @@
-﻿namespace OnlineCoursesApp.Monolith.Application.Common.Interfaces;
+﻿namespace OnlineCoursesApp.Monolith.Domain.Repositories;
 
 public interface IUnitOfWork
 {

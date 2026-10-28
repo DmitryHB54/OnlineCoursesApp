@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OnlineCoursesApp.Monolith.Application.AppConstants;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Reports.Queries.GetCoursesReport;
 
 namespace OnlineCoursesApp.Monolith.WebApi.Controllers;
@@ -16,7 +17,7 @@ public class ReportsController : ControllerBase
         _mediator = mediator;
     }
 
-    [Authorize(Roles = "Admin,Teacher")]
+    [Authorize(Roles = RolesConstants.AdminOrTeacher)]
     [HttpGet("courses")]
     [ProducesResponseType(typeof(GetCoursesReportQuery), StatusCodes.Status200OK)]
     public async Task<IActionResult> CoursesReport([FromQuery] DateTime from,

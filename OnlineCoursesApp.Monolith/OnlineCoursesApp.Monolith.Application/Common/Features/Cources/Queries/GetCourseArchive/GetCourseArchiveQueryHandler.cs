@@ -1,7 +1,9 @@
 ﻿using MediatR;
+using OnlineCoursesApp.Monolith.Application.AppConstants;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Domain.Enums;
 using OnlineCoursesApp.Monolith.Domain.Exceptions;
+using OnlineCoursesApp.Monolith.Domain.Repositories;
 
 namespace OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Queries.GetCourseArchive;
 
@@ -51,6 +53,6 @@ public class GetCourseArchiveQueryHandler
         var stream = await _fileStorageService.CreateCourseArchiveAsync(course.Id, paths, cancellationToken);
 
         var safeFileName = $"course-{course.Id:N}-{DateTimeOffset.UtcNow:yyyyMMdd}.zip";
-        return new CourseArchiveFile(stream, safeFileName, "application/zip");
+        return new CourseArchiveFile(stream, safeFileName, FilesConstants.ZipMimeType);
     }
 }

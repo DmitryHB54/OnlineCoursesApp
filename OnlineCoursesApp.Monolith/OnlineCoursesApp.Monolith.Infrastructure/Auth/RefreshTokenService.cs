@@ -2,9 +2,9 @@
 using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using OnlineCoursesApp.Monolith.Application.Auth;
-using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Domain.Entities;
 using OnlineCoursesApp.Monolith.Infrastructure.Persistence;
+using OnlineCoursesApp.Monolith.Domain.Repositories;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure.Auth;
 

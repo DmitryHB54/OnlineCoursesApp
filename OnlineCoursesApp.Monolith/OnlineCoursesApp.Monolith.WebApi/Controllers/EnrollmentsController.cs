@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OnlineCoursesApp.Monolith.Application.AppConstants;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Dtos;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Enrollments.Commands.CancelEnrollment;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Enrollments.Commands.EnrollInCourse;
@@ -20,7 +21,7 @@ public class EnrollmentsController : ControllerBase
         _mediator = mediator;
     }
 
-    [Authorize(Roles = "Student")]
+    [Authorize(Roles = RolesConstants.Student)]
     [HttpPost("courses/{courseId:guid}/enrollment")]
     [ProducesResponseType(typeof(EnrollmentDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -30,7 +31,7 @@ public class EnrollmentsController : ControllerBase
         return Ok(result);
     }
 
-    [Authorize(Roles = "Student")]
+    [Authorize(Roles = RolesConstants.Student)]
     [HttpDelete("courses/{courseId:guid}/enrollment")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -40,7 +41,7 @@ public class EnrollmentsController : ControllerBase
         return NoContent();
     }
 
-    [Authorize(Roles = "Student")]
+    [Authorize(Roles = RolesConstants.Student)]
     [HttpGet("me/courses")]
     [ProducesResponseType(typeof(List<CourseDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

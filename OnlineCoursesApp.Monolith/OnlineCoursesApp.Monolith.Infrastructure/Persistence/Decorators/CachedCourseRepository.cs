@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Application.Models;
 using OnlineCoursesApp.Monolith.Domain.Entities;
+using OnlineCoursesApp.Monolith.Domain.Repositories;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure.Persistence.Decorators;
 
@@ -47,11 +47,6 @@ public class CachedCourseRepository : ICourseRepository
     public Task<Course?> GetByIdForUpdateAsync(Guid id, CancellationToken cancellationToken)
     { 
         return _inner.GetByIdForUpdateAsync(id, cancellationToken);    
-    }
-
-    public Task<PagedResult<Course>> GetFilteredAsync(CourseFilter filter, CancellationToken cancellationToken)
-    {
-        return _inner.GetFilteredAsync(filter, cancellationToken);
     }
 
     public async Task AddAsync(Course course, CancellationToken ct)

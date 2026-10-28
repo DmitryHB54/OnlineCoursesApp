@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Dtos;
-using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Domain.Exceptions;
+using OnlineCoursesApp.Monolith.Domain.Repositories;
 
 namespace OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Queries.GetCourseById;
 

@@ -1,9 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
 using OnlineCoursesApp.Monolith.Application.Auth.Dtos;
-using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Domain.Entities;
 using OnlineCoursesApp.Monolith.Domain.Exceptions;
+using OnlineCoursesApp.Monolith.Domain.Repositories;
 
 namespace OnlineCoursesApp.Monolith.Application.Auth.Commands.Register;
 

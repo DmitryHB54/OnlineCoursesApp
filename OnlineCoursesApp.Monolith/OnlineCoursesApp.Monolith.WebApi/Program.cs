@@ -1,16 +1,13 @@
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.IdentityModel.Tokens;
 using OnlineCoursesApp.Monolith.Application;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Infrastructure;
-using OnlineCoursesApp.Monolith.Infrastructure.Auth;
 using OnlineCoursesApp.Monolith.Infrastructure.Persistence;
 using OnlineCoursesApp.Monolith.WebApi.ExceptionHandling;
 using OnlineCoursesApp.Monolith.WebApi.Extensions;
 using OnlineCoursesApp.Monolith.WebApi.Services;
 using Microsoft.EntityFrameworkCore;
+using OnlineCoursesApp.Monolith.Application.AppConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,33 +18,13 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.Configure<FormOptions>(o =>
 {
-    o.MultipartBodyLengthLimit = 20 * 1024 * 1024;
+    o.MultipartBodyLengthLimit = FilesConstants.MaxFileSizeBytes;
 });
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
-var jwtSection = builder.Configuration.GetSection(JwtOptions.SectionName);
-var jwtKey = jwtSection["Key"] ?? throw new InvalidOperationException("Jwt:Key is not set.");
-
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = jwtSection["Issuer"],
-            ValidateAudience = true,
-            ValidAudience = jwtSection["Audience"],
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-            ClockSkew = TimeSpan.FromMinutes(1)
-        };
-    });
-
-builder.Services.AddAuthorization();
+builder.Services.AddAuthConfig(builder.Configuration);
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();

@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using OnlineCoursesApp.Monolith.Application.Common.Features.LessonMaterials.Dtos;
-using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
+using OnlineCoursesApp.Monolith.Domain.Repositories;
 
 namespace OnlineCoursesApp.Monolith.Application.Common.Features.LessonMaterials.Queries.GetCourseMaterials;
 

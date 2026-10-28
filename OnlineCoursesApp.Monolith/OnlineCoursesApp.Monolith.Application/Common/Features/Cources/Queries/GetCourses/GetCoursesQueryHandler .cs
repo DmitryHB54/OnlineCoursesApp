@@ -2,18 +2,17 @@
 using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Dtos;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Application.Models;
-using OnlineCoursesApp.Monolith.Domain.Entities;
 
 namespace OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Queries.GetCourses;
 
 public class GetCoursesQueryHandler: IRequestHandler<GetCoursesQuery, PagedResult<CourseDto>>
 {
-    private readonly ICourseRepository _courseRepository;
+    private readonly ICourseFilteredReadRepository _courseFiltereReadRepository;
 
     public GetCoursesQueryHandler(
-        ICourseRepository courseRepository)
+        ICourseFilteredReadRepository courseFiltereReadRepository)
     {
-        _courseRepository = courseRepository;
+        _courseFiltereReadRepository = courseFiltereReadRepository;
     }
 
     public async Task<PagedResult<CourseDto>> Handle(GetCoursesQuery request, CancellationToken cancellationToken)
@@ -26,7 +25,7 @@ public class GetCoursesQueryHandler: IRequestHandler<GetCoursesQuery, PagedResul
             request.PageSize,
             request.SortBy);
 
-        var result = await _courseRepository.GetFilteredAsync(filter, cancellationToken);
+        var result = await _courseFiltereReadRepository.GetFilteredAsync(filter, cancellationToken);
 
         var items = result.Items
             .Select(c => new CourseDto(c.Id, c.Title, c.Description,

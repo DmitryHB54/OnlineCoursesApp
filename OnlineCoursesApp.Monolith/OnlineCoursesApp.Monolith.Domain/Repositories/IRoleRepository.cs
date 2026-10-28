@@ -1,7 +1,7 @@
 ﻿using OnlineCoursesApp.Monolith.Domain.Entities;
 using OnlineCoursesApp.Monolith.Domain.Enums;
 
-namespace OnlineCoursesApp.Monolith.Application.Common.Interfaces;
+namespace OnlineCoursesApp.Monolith.Domain.Repositories;
 
 public interface IRoleRepository
 {

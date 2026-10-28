@@ -7,5 +7,10 @@ public record PagedResult<T>(
     int TotalCount)
 {
     public int TotaPages
-        => (int)Math.Ceiling(TotalCount / (double)PageSize);
+    {
+        get
+        {
+            return (int)Math.Ceiling(TotalCount / (double)PageSize);
+        }
+    }
 }

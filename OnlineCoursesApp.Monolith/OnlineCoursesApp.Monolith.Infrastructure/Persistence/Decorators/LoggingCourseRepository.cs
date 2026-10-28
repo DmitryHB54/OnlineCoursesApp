@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Application.Models;
 using OnlineCoursesApp.Monolith.Domain.Entities;
+using OnlineCoursesApp.Monolith.Domain.Repositories;
 using OnlineCoursesApp.Monolith.Infrastructure.Persistence.Repositories;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure.Persistence.Decorators;
@@ -36,18 +36,6 @@ public class LoggingCourseRepository : ICourseRepository
         _logger.LogInformation("[Repo] GetByIdForUpdateAsync({id})", id);
 
         return await _inner.GetByIdForUpdateAsync(id, cancellationToken);
-    }
-
-    public async Task<PagedResult<Course>> GetFilteredAsync(CourseFilter filter, CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("[Repo] GetFiltered(category={Category}, author={AuthorId}, search={Search}, page={Page}, size={Size})",
-            filter.Category, filter.AuthorId, filter.Search, filter.Page, filter.PageSize);
-
-        var result = await _inner.GetFilteredAsync(filter, cancellationToken);
-
-        _logger.LogInformation("[Repo] GetFiltered -> {Count} of {Total}", result.Items.Count, result.TotalCount);
-
-        return result;
     }
 
     public async Task AddAsync(Course course, CancellationToken cancellationToken)

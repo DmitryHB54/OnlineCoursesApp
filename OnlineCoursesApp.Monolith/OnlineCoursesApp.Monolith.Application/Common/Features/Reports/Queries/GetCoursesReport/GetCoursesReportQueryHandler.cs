@@ -1,11 +1,12 @@
-﻿using System.Text;
-using System.Globalization;
-using MediatR;
-using CsvHelper;
+﻿using CsvHelper;
 using CsvHelper.Configuration;
+using MediatR;
+using OnlineCoursesApp.Monolith.Application.AppConstants;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Reports.Dtos;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Domain.Enums;
+using System.Globalization;
+using System.Text;
 
 namespace OnlineCoursesApp.Monolith.Application.Common.Features.Reports.Queries.GetCoursesReport;
 
@@ -37,7 +38,7 @@ public class GetCoursesReportQueryHandler
         var bytes = BuildCsv(rows);
         var fileName = $"courses-report-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss-fff}.csv";
 
-        return new CoursesReportFile(bytes, fileName, "text/csv;");
+        return new CoursesReportFile(bytes, fileName, FilesConstants.CsvMimeType);
     }
 
     private static byte[] BuildCsv(List<CourseReportRowDto> rows)

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OnlineCoursesApp.Monolith.Application.AppConstants;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Commands.CreateCourse;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Commands.DeleteCourse;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Commands.UpdateCourse;
@@ -40,7 +41,7 @@ public class CourseController : ControllerBase
         return Ok(result);
     }
 
-    [Authorize(Roles = "Admin,Teacher")]
+    [Authorize(Roles = RolesConstants.AdminOrTeacher)]
     [HttpPost]
     [ProducesResponseType(typeof(CourseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -50,7 +51,7 @@ public class CourseController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
 
-    [Authorize(Roles = "Admin,Teacher")]
+    [Authorize(Roles = RolesConstants.AdminOrTeacher)]
     [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(CourseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -67,7 +68,7 @@ public class CourseController : ControllerBase
         return Ok(result);
     }
 
-    [Authorize(Roles = "Admin,Teacher")]
+    [Authorize(Roles = RolesConstants.AdminOrTeacher)]
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -78,7 +79,7 @@ public class CourseController : ControllerBase
         return NoContent();
     }
 
-    [Authorize(Roles = "Admin,Teacher")]
+    [Authorize(Roles = RolesConstants.AdminOrTeacher)]
     [HttpGet("{id:guid}/archive")]
     [ProducesResponseType(typeof(CourseArchiveFile), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

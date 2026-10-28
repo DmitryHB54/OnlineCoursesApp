@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Domain.Entities;
+using OnlineCoursesApp.Monolith.Domain.Repositories;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure.Persistence.Repositories;
 
