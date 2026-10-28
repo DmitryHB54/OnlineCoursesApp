@@ -6,10 +6,16 @@ using OnlineCoursesApp.Monolith.Domain.Entities;
 
 namespace OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Queries.GetCourses;
 
-public class GetCoursesQueryHandler(
-    ICourseRepository courseRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<GetCoursesQuery, PagedResult<CourseDto>>
+public class GetCoursesQueryHandler: IRequestHandler<GetCoursesQuery, PagedResult<CourseDto>>
 {
+    private readonly ICourseRepository _courseRepository;
+
+    public GetCoursesQueryHandler(
+        ICourseRepository courseRepository)
+    {
+        _courseRepository = courseRepository;
+    }
+
     public async Task<PagedResult<CourseDto>> Handle(GetCoursesQuery request, CancellationToken cancellationToken)
     {
         var filter = new CourseFilter(
@@ -20,9 +26,9 @@ public class GetCoursesQueryHandler(
             request.PageSize,
             request.SortBy);
 
-        PagedResult<Course> result = await courseRepository.GetFilteredAsync(filter, cancellationToken);
+        var result = await _courseRepository.GetFilteredAsync(filter, cancellationToken);
 
-        IReadOnlyList<CourseDto> items = result.Items
+        var items = result.Items
             .Select(c => new CourseDto(c.Id, c.Title, c.Description,
                 c.AuthorId, c.Category, c.Price, c.CreatedAt))
             .ToList();

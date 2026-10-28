@@ -1,4 +1,5 @@
 ﻿namespace OnlineCoursesApp.Monolith.Infrastructure.Auth;
+
 public class JwtOptions
 {
     public const string SectionName = "Jwt";

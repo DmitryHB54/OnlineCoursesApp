@@ -1,5 +1,6 @@
 ﻿namespace OnlineCoursesApp.Monolith.Application.Common.Interfaces;
+
 public interface IUnitOfWork
 {
-    Task<int> SaveChangesAsync(CancellationToken ct);
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

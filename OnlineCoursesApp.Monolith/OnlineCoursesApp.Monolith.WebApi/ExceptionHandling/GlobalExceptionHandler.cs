@@ -4,15 +4,23 @@ using Microsoft.AspNetCore.Mvc;
 using OnlineCoursesApp.Monolith.Domain.Exceptions;
 
 namespace OnlineCoursesApp.Monolith.WebApi.ExceptionHandling;
-public class GlobalExceptionHandler(
-    ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
+
+public class GlobalExceptionHandler : IExceptionHandler
 {
+    private readonly ILogger<GlobalExceptionHandler> _logger;
+
+    public GlobalExceptionHandler(
+        ILogger<GlobalExceptionHandler> logger)
+    {
+        _logger = logger;
+    }
+
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
         Exception exception,
         CancellationToken cancellationToken)
     {
-        logger.LogError(exception, "Unhandled exception: {Message}", exception.Message);
+        _logger.LogError(exception, "Unhandled exception: {Message}", exception.Message);
 
         ProblemDetails problemDetails = exception switch
         {
@@ -52,29 +60,34 @@ public class GlobalExceptionHandler(
     }
 
     private static ProblemDetails CreateNotFoundProblem(NotFoundException exception)
-        => new ()
-        { 
+    {
+        return new()
+        {
             Status = StatusCodes.Status404NotFound,
             Title = "Resource not found",
             Detail = exception.Message,
             Type = "https://tools.ietf.org/html/rfc7231#section-6.5.4"
         };
+    }
 
     private static ProblemDetails CreateForbiddenProblem(ForbiddenException exception)
-        => new()
+    {
+        return new()
         {
             Status = StatusCodes.Status403Forbidden,
             Title = "Access denied",
             Detail = exception.Message,
             Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3"
         };
+    }
 
     private static ProblemDetails CreateServerErrorProblem()
-        => new()
+    {
+        return new()
         {
             Status = StatusCodes.Status500InternalServerError,
             Title = "An unexpected error occured.",
             Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1"
         };
-
+    }
 }

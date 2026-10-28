@@ -1,10 +1,11 @@
 ﻿using FluentValidation;
 
 namespace OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Queries.GetCourseById;
+
 public class GetCourseByIdQueryValidator : AbstractValidator<GetCourseByIdQuery>
 {
     public GetCourseByIdQueryValidator()
     {
-        RuleFor(x => x.Id).NotEmpty();
+        RuleFor(x => x.Id).NotEmpty().WithMessage("Course id is required.");
     }
 }

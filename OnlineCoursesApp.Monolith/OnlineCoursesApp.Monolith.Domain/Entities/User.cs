@@ -1,4 +1,5 @@
 ﻿namespace OnlineCoursesApp.Monolith.Domain.Entities;
+
 public class User
 {
     public Guid Id;

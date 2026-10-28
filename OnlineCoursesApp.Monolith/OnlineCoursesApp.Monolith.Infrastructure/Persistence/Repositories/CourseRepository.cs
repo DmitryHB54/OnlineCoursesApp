@@ -5,26 +5,42 @@ using OnlineCoursesApp.Monolith.Domain.Entities;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure.Persistence.Repositories;
 
-public class CourseRepository(
-    AppDbContext dbContext) : ICourseRepository
+public class CourseRepository : ICourseRepository
 {
-    public Task<Course?> GetByIdAsync(Guid id, CancellationToken ct)
-        => dbContext.Cources
-            .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Id == id, ct);
+    private readonly AppDbContext _dbContext;
 
-    public Task<Course?> GetByIdForUpdateAsync(Guid id, CancellationToken ct)
-        => dbContext.Cources.FirstOrDefaultAsync(c => c.Id == id, ct);
-
-    public async Task<PagedResult<Course>> GetFilteredAsync(CourseFilter filter, CancellationToken ct)
+    public CourseRepository(
+        AppDbContext dbContext)
     {
-        var query = dbContext.Cources.AsNoTracking().AsQueryable();
+        _dbContext = dbContext;
+    }
+
+    public Task<Course?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return _dbContext.Cources
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+    }
+
+    public Task<Course?> GetByIdForUpdateAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return _dbContext.Cources
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+    }
+
+    public async Task<PagedResult<Course>> GetFilteredAsync(CourseFilter filter, CancellationToken cancellationToken)
+    {
+        var query = _dbContext.Cources.AsNoTracking().AsQueryable();
 
         if (filter.Category.HasValue)
+        {
             query = query.Where(c => c.Category == filter.Category.Value);
+        }
 
         if (filter.AuthorId.HasValue)
+        {
             query = query.Where(c => c.AuthorId == filter.AuthorId.Value);
+        }
 
         if(!string.IsNullOrWhiteSpace(filter.Search))
         {
@@ -43,19 +59,28 @@ public class CourseRepository(
             _ => query.OrderByDescending(c => c.CreatedAt)
         };
 
-        var total = await query.CountAsync(ct);
+        var total = await query.CountAsync(cancellationToken);
 
         var items = await query
             .Skip((filter.Page - 1) * filter.PageSize)
             .Take(filter.PageSize)
-            .ToListAsync(ct);
+            .ToListAsync(cancellationToken);
 
         return new PagedResult<Course>(items, filter.Page, filter.PageSize, total);
     }
 
-    public async Task AddAsync(Course course, CancellationToken ct)
-        => await dbContext.Cources.AddAsync(course, ct);
-    public void Update(Course course) => dbContext.Cources.Update(course);
-    public void Remove(Course course) => dbContext.Cources.Remove(course);
+    public async Task AddAsync(Course course, CancellationToken cancellationToken)
+    { 
+        await _dbContext.Cources.AddAsync(course, cancellationToken);         
+    }
 
+    public void Update(Course course)
+    { 
+        _dbContext.Cources.Update(course);
+    }
+
+    public void Remove(Course course)
+    { 
+        _dbContext.Cources.Remove(course);
+    } 
 }

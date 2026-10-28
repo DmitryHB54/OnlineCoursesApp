@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 
 namespace OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Commands.UpdateCourse;
+
 public class UpdateCourseCommandValidator : AbstractValidator<UpdateCourseCommand>
 {
     public UpdateCourseCommandValidator() 

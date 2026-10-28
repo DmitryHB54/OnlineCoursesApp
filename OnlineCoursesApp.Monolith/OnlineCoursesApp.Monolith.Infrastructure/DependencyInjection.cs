@@ -12,6 +12,7 @@ using OnlineCoursesApp.Monolith.Infrastructure.Persistence.Repositories;
 using OnlineCoursesApp.Monolith.Infrastructure.Storage;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure;
+
 public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)

@@ -3,6 +3,7 @@ using OnlineCoursesApp.Monolith.Application.Auth.Commands.Register;
 using OnlineCoursesApp.Monolith.Domain.Enums;
 
 namespace OnlineCoursesApp.Monolith.UnitTests.Validators;
+
 public class RegisterCommandValidatorTests
 {
     private readonly RegisterCommandValidator _validator = new();

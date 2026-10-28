@@ -3,20 +3,32 @@ using System.IdentityModel.Tokens.Jwt;
 using OnlineCoursesApp.Monolith.Domain.Enums;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 
-
 namespace OnlineCoursesApp.Monolith.WebApi.Services;
-public class CurrentUserService(
-    IHttpContextAccessor accessor) : ICurrentUserService
+
+public class CurrentUserService : ICurrentUserService
 {
-    public bool IsAuthenticated =>
-        accessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
+    private readonly IHttpContextAccessor _accessor;
+
+    public CurrentUserService(
+        IHttpContextAccessor accessor)
+    {
+        _accessor = accessor;
+    }
+
+    public bool IsAuthenticated
+    {
+        get
+        {
+            return _accessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
+        }
+    }
 
     public Guid UserId
     {
         get
         {
-            var value = accessor.HttpContext?.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
-                ?? accessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var value = _accessor.HttpContext?.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                ?? _accessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (string.IsNullOrEmpty(value) || !Guid.TryParse(value, out var id))
                 throw new InvalidOperationException("User isn't authenticated");
@@ -29,7 +41,7 @@ public class CurrentUserService(
     {
         get
         {
-            var value = accessor.HttpContext?.User.FindFirstValue(ClaimTypes.Role);
+            var value = _accessor.HttpContext?.User.FindFirstValue(ClaimTypes.Role);
 
             if (string.IsNullOrEmpty(value) || !Enum.TryParse<RoleName>(value, out var role))
                 throw new InvalidOperationException("Role isn't found in the token.");

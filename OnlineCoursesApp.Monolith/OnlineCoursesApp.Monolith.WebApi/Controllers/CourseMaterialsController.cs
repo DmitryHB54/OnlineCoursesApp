@@ -12,13 +12,20 @@ namespace OnlineCoursesApp.Monolith.WebApi.Controllers;
 
 [ApiController]
 [Route("api/courses/{courseId:guid}/materials")]
-public class CourseMaterialsController(IMediator mediator) : ControllerBase
+public class CourseMaterialsController : ControllerBase
 {
+    private readonly IMediator _mediator;
+
+    public CourseMaterialsController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
     [HttpGet]
     [ProducesResponseType(typeof(List<LessonMaterialDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> List(Guid courseId, CancellationToken ct)
+    public async Task<IActionResult> List(Guid courseId, CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(new GetCourseMaterialsQuery(courseId), ct);
+        var result = await _mediator.Send(new GetCourseMaterialsQuery(courseId), cancellationToken);
         return Ok(result);
     }
 
@@ -30,31 +37,39 @@ public class CourseMaterialsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> Upload(Guid courseId, [FromForm] string title,
         [FromForm] MaterialType materialType, IFormFile file, CancellationToken cancellationToken)
     {
-        if(file is null || file.Length == 0)
+        if (file is null || file.Length == 0)
+        {
             return BadRequest(new { error = "File is required." });
+        }
 
         await using var stream = file.OpenReadStream();
-
         var command = new UploadMaterialCommand(
             courseId, title, materialType, file.FileName, file.Length, stream);
 
-        var result = await mediator.Send(command, cancellationToken);
+        var result = await _mediator.Send(command, cancellationToken);
         return Ok(result);
     }
 }
 
 [ApiController]
 [Route("api/materials")]
-public class MaterialsController(IMediator mediator) : ControllerBase
+public class MaterialsController : ControllerBase
 {
+    private readonly IMediator _mediator;
+
+    public MaterialsController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
     [Authorize]
-    [HttpGet("{id:guid}/download")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Download(Guid id, CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(new DownloadMaterialQuery(id), cancellationToken);
+        var result = await _mediator.Send(new DownloadMaterialQuery(id), cancellationToken);
         return File(result.Content, result.ContentType, result.FuleName);
     }
 
@@ -65,7 +80,7 @@ public class MaterialsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await mediator.Send(new DeleteMaterialCommand(id), cancellationToken);
+        await _mediator.Send(new DeleteMaterialCommand(id), cancellationToken);
         return NoContent();
     }
 }

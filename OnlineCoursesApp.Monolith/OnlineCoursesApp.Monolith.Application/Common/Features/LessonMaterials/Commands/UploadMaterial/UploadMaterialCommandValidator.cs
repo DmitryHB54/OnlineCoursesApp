@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 
 namespace OnlineCoursesApp.Monolith.Application.Common.Features.LessonMaterials.Commands.UploadMaterial;
+
 public class UploadMaterialCommandValidator : AbstractValidator<UploadMaterialCommand>
 {
     private static readonly string[] Allowed = { ".pdf", ".jpg", ".jpeg", ".webp", ".png", ".doc", ".docx" };

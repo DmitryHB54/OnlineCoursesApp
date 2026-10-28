@@ -3,55 +3,79 @@ using Microsoft.Extensions.Logging;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Application.Models;
 using OnlineCoursesApp.Monolith.Domain.Entities;
-using System.Reflection;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure.Persistence.Decorators;
-public class CachedCourseRepository(
-    ICourseRepository inner,
-    IMemoryCache cache,
-    ILogger<ICourseRepository> logger) : ICourseRepository
+
+public class CachedCourseRepository : ICourseRepository
 {
     private static readonly TimeSpan CacheTtl = TimeSpan.FromMinutes(5);
     private static string Key(Guid id) => $"course:{id}";
 
-    public async Task<Course?> GetByIdAsync(Guid id, CancellationToken ct)
+    private readonly ICourseRepository _inner;
+    private readonly IMemoryCache _cache;
+    private readonly ILogger<ICourseRepository> _logger;
+
+    public CachedCourseRepository(
+        ICourseRepository inner,
+        IMemoryCache cache,
+        ILogger<ICourseRepository> logger)
     {
-        if(cache.TryGetValue(Key(id), out Course? cached) && cached is not null)
+        _inner = inner;
+        _cache = cache;
+        _logger = logger;
+    }
+
+    public async Task<Course?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        if(_cache.TryGetValue(Key(id), out Course? cached) && cached is not null)
         {
-            logger.LogInformation("[Cache] HIT course:{Id}", id);
+            _logger.LogInformation("[Cache] HIT course:{Id}", id);
             return cached;
         }
 
-        logger.LogInformation("[Cache] MISS course:{Id}", id);
-        var course = await inner.GetByIdAsync(id, ct);
+        _logger.LogInformation("[Cache] MISS course:{Id}", id);
+        var course = await _inner.GetByIdAsync(id, cancellationToken);
 
         if (course is not null)
-            cache.Set(Key(id), course, CacheTtl);
+        {
+            _cache.Set(Key(id), course, CacheTtl);
+        }
 
         return course;
     }
-    public Task<Course?> GetByIdForUpdateAsync(Guid id, CancellationToken ct)
-            => inner.GetByIdForUpdateAsync(id, ct);
 
-    public Task<PagedResult<Course>> GetFilteredAsync(CourseFilter filter, CancellationToken ct)
-        => inner.GetFilteredAsync(filter, ct);
+    public Task<Course?> GetByIdForUpdateAsync(Guid id, CancellationToken cancellationToken)
+    { 
+        return _inner.GetByIdForUpdateAsync(id, cancellationToken);    
+    }
+
+    public Task<PagedResult<Course>> GetFilteredAsync(CourseFilter filter, CancellationToken cancellationToken)
+    {
+        return _inner.GetFilteredAsync(filter, cancellationToken);
+    }
 
     public async Task AddAsync(Course course, CancellationToken ct)
     {
-        cache.Remove(Key(course.Id));
-        await inner.AddAsync(course, ct);
+        _cache.Remove(Key(course.Id));
+
+        await _inner.AddAsync(course, ct);
     }
+
     public void Update(Course course)
     {
-        cache.Remove(Key(course.Id));
-        logger.LogInformation("[Cache] INVALIDATE course:{Id} (Update)", course.Id);
-        inner.Update(course);
+        _cache.Remove(Key(course.Id));
+
+        _logger.LogInformation("[Cache] INVALIDATE course:{Id} (Update)", course.Id);
+
+        _inner.Update(course);
     }
 
     public void Remove(Course course)
     {
-        cache.Remove(Key(course.Id));
-        logger.LogInformation("[Cache] INVALIDATE course:{Id} (Remove)", course.Id);
-        inner.Remove(course);
+        _cache.Remove(Key(course.Id));
+
+        _logger.LogInformation("[Cache] INVALIDATE course:{Id} (Remove)", course.Id);
+
+        _inner.Remove(course);
     }
 }

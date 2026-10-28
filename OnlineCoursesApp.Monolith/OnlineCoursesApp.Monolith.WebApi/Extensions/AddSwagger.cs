@@ -1,6 +1,7 @@
 ﻿using Microsoft.OpenApi;
 
 namespace OnlineCoursesApp.Monolith.WebApi.Extensions;
+
 public static class AddSwagger
 {
     public static IServiceCollection AddSwaggerConfig(this IServiceCollection services)
@@ -22,6 +23,7 @@ public static class AddSwagger
                 [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>()
             });
         });
+
         return services;
     }
 }

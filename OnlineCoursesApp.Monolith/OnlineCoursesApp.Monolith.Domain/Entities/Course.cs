@@ -1,6 +1,7 @@
 ﻿using OnlineCoursesApp.Monolith.Domain.Enums;
 
 namespace OnlineCoursesApp.Monolith.Domain.Entities;
+
 public class Course
 {
     public Guid Id { get; set; }

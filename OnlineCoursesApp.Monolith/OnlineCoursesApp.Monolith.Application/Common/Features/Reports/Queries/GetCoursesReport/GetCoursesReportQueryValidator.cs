@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 
 namespace OnlineCoursesApp.Monolith.Application.Common.Features.Reports.Queries.GetCoursesReport;
+
 public class GetCoursesReportQueryValidator : AbstractValidator<GetCoursesReportQuery>
 {
     public GetCoursesReportQueryValidator()

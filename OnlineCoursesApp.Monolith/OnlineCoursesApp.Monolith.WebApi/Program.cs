@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.IdentityModel.Tokens;
@@ -10,7 +11,6 @@ using OnlineCoursesApp.Monolith.WebApi.ExceptionHandling;
 using OnlineCoursesApp.Monolith.WebApi.Extensions;
 using OnlineCoursesApp.Monolith.WebApi.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 

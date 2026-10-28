@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 
 namespace OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Queries.GetCourseArchive;
+
 public class GetCourseArchiveQueryValidator : AbstractValidator<GetCourseArchiveQuery>
 {
     public GetCourseArchiveQueryValidator()

@@ -1,4 +1,5 @@
 ﻿namespace OnlineCoursesApp.Monolith.Domain.Enums;
+
 public enum MaterialType
 {
     Image = 1,

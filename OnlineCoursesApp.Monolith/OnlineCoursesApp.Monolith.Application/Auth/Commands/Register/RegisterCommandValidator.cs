@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
-using OnlineCoursesApp.Monolith.Domain.Enums;
 
 namespace OnlineCoursesApp.Monolith.Application.Auth.Commands.Register;
+
 public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 {
     public RegisterCommandValidator()
@@ -22,7 +22,5 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 
         RuleFor(c => c.Role)
             .IsInEnum().WithMessage("Invalid role.");
-            //.NotEqual(RoleName.Admin)
-            //.WithMessage("Registration with admin role is prohibited.");
     }
 }

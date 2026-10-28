@@ -3,18 +3,27 @@ using OnlineCoursesApp.Monolith.Application.Common.Features.Reports.Dtos;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure.Persistence.Repositories;
-public class ReportRepository(
-    AppDbContext dbContext) : IReportRepository
+public class ReportRepository : IReportRepository
 {
-    public async Task<List<CourseReportRowDto>> GetCourseStatsAsync(
-        DateTimeOffset from, DateTimeOffset to, Guid? authorId, CancellationToken ct)
+    private readonly AppDbContext _dbContext;
+
+    public ReportRepository(
+        AppDbContext dbContext)
     {
-        var query = dbContext.Cources
+        _dbContext = dbContext;
+    }
+
+    public async Task<List<CourseReportRowDto>> GetCourseStatsAsync(
+        DateTimeOffset from, DateTimeOffset to, Guid? authorId, CancellationToken cancellationToken)
+    {
+        var query = _dbContext.Cources
             .AsNoTracking()
             .Where(c => c.CreatedAt >= from && c.CreatedAt <= to);
 
         if (authorId.HasValue)
+        {
             query = query.Where(c => c.AuthorId == authorId.Value);
+        }
 
         var raw = await query
             .OrderByDescending(c => c.CreatedAt)
@@ -28,7 +37,7 @@ public class ReportRepository(
                     c.Materials.Count(m => m.CreatedAt >= from && m.CreatedAt <= to),
                 EnrollmentsCount = 
                     c.Enrollments.Count(e => e.EnrolledAt >= from && e.EnrolledAt <= to)
-            }).ToListAsync(ct);
+            }).ToListAsync(cancellationToken);
 
         return raw.Select(r => new CourseReportRowDto(
             r.Title,

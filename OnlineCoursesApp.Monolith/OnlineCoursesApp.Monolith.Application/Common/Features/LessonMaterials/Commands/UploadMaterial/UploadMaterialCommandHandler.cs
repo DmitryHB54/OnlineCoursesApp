@@ -7,25 +7,43 @@ using OnlineCoursesApp.Monolith.Domain.Exceptions;
 
 namespace OnlineCoursesApp.Monolith.Application.Common.Features.LessonMaterials.Commands.UploadMaterial;
 
-public class UploadMaterialCommandHandler(
-    ILessonMaterialRepository lessonMaterialRepository,
-    ICourseRepository courseRepository,
-    IUnitOfWork unitOfWork,
-    IFileStorageService fileStorageService,
-    ICurrentUserService currentUserService) : IRequestHandler<UploadMaterialCommand, LessonMaterialDto>
+public class UploadMaterialCommandHandler
+    : IRequestHandler<UploadMaterialCommand, LessonMaterialDto>
 {
+    private readonly ILessonMaterialRepository _lessonMaterialRepository;
+    private readonly ICourseRepository _courseRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IFileStorageService _fileStorageService;
+    private readonly ICurrentUserService _currentUserService;
+
+    public UploadMaterialCommandHandler(
+        ILessonMaterialRepository lessonMaterialRepository,
+        ICourseRepository courseRepository,
+        IUnitOfWork unitOfWork,
+        IFileStorageService fileStorageService,
+        ICurrentUserService currentUserService)
+    {
+        _lessonMaterialRepository = lessonMaterialRepository;
+        _courseRepository = courseRepository;
+        _unitOfWork = unitOfWork;
+        _fileStorageService = fileStorageService;
+        _currentUserService = currentUserService;
+    }
+
     public async Task<LessonMaterialDto> Handle(UploadMaterialCommand request, CancellationToken cancellationToken)
     {
-        var course = await courseRepository.GetByIdAsync(request.CourseId, cancellationToken)
-            ?? throw new NotFoundException("Курс не найден.");
+        var course = await _courseRepository.GetByIdAsync(request.CourseId, cancellationToken)
+            ?? throw new NotFoundException("Course not found");
 
-        if(currentUserService.Role == RoleName.Teacher && currentUserService.UserId != course.AuthorId)
+        if(_currentUserService.Role == RoleName.Teacher && _currentUserService.UserId != course.AuthorId)
+        {
             throw new ForbiddenException("It's prohibited to add content to someone else's course.");
+        }
 
-        StoredFileResult stored = await fileStorageService.SaveAsync(
+        var stored = await _fileStorageService.SaveAsync(
             request.CourseId, request.FileContent, request.FileName, cancellationToken);
 
-        uint orderNumber = await lessonMaterialRepository.GetNextOrderNumberAsync(request.CourseId, cancellationToken);
+        uint orderNumber = await _lessonMaterialRepository.GetNextOrderNumberAsync(request.CourseId, cancellationToken);
 
         var material = new LessonMaterial
         {
@@ -42,8 +60,8 @@ public class UploadMaterialCommandHandler(
                 stored.Extension)
         };
 
-        await lessonMaterialRepository.AddAsync(material, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await _lessonMaterialRepository.AddAsync(material, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return new LessonMaterialDto(
             material.Id, material.CourseId, material.Title,

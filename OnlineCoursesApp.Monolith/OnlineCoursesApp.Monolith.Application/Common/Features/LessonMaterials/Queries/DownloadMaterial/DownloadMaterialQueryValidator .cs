@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 
 namespace OnlineCoursesApp.Monolith.Application.Common.Features.LessonMaterials.Queries.DownloadMaterial;
+
 public class DownloadMaterialQueryValidator : AbstractValidator<DownloadMaterialQuery>
 {
     public DownloadMaterialQueryValidator()
