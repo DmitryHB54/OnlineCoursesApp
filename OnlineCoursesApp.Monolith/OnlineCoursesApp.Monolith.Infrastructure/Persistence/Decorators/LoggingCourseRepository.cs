@@ -1,51 +1,67 @@
 ﻿using Microsoft.Extensions.Logging;
-using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Application.Models;
 using OnlineCoursesApp.Monolith.Domain.Entities;
+using OnlineCoursesApp.Monolith.Domain.Repositories;
 using OnlineCoursesApp.Monolith.Infrastructure.Persistence.Repositories;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure.Persistence.Decorators;
 
-public class LoggingCourseRepository(
-    ICourseRepository inner,
-    ILogger<CourseRepository> logger) : ICourseRepository
+public class LoggingCourseRepository : ICourseRepository
 {
-    public async Task<Course?> GetByIdAsync(Guid id, CancellationToken ct)
+    private readonly ICourseRepository _inner;
+    private readonly ILogger<CourseRepository> _logger;
+
+    public LoggingCourseRepository(
+        ICourseRepository inner,
+        ILogger<CourseRepository> logger)
     {
-        logger.LogInformation("[Repo] GetById({id})", id);
-        var result = await inner.GetByIdAsync(id, ct);
-        logger.LogInformation("[Repo] GetById({Id}) -> {Status}",
-            id, result is null ? "not found" : "found");
-        return result; 
-    }
-    public async Task<Course?> GetByIdForUpdateAsync(Guid id, CancellationToken ct)
-    {
-        logger.LogInformation("[Repo] GetByIdForUpdateAsync({id})", id);
-        return await inner.GetByIdForUpdateAsync(id, ct);
-    }
-    public async Task<PagedResult<Course>> GetFilteredAsync(CourseFilter filter, CancellationToken ct)
-    {
-        logger.LogInformation("[Repo] GetFiltered(category={Category}, author={AuthorId}, search={Search}, page={Page}, size={Size})",
-            filter.Category, filter.AuthorId, filter.Search, filter.Page, filter.PageSize);
-        var result = await inner.GetFilteredAsync(filter, ct);
-        logger.LogInformation("[Repo] GetFiltered -> {Count} of {Total}", result.Items.Count, result.TotalCount);
-        return result;
+        _inner = inner;
+        _logger = logger;
     }
 
-    public async Task AddAsync(Course course, CancellationToken ct)
+    public async Task<Course?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        logger.LogInformation("[Repo] Add course '{Title}' ({Id})", course.Title, course.Id);
-        await inner.AddAsync(course, ct);
+        _logger.LogInformation("[Repo] GetById({id})", id);
+
+        var result = await _inner.GetByIdAsync(id, cancellationToken);
+
+        _logger.LogInformation("[Repo] GetById({Id}) -> {Status}",
+            id, result is null ? "not found" : "found");
+
+        return result; 
     }
+
+    public Task<bool> ExistsByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("[Repo] ExistsByIdAsync({id})", id);
+        return _inner.ExistsByIdAsync(id, cancellationToken);
+    }
+
+    public async Task<Course?> GetByIdForUpdateAsync(Guid id, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("[Repo] GetByIdForUpdateAsync({id})", id);
+
+        return await _inner.GetByIdForUpdateAsync(id, cancellationToken);
+    }
+
+    public async Task AddAsync(Course course, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("[Repo] Add course '{Title}' ({Id})", course.Title, course.Id);
+
+        await _inner.AddAsync(course, cancellationToken);
+    }
+
     public void Update(Course course)
     {
-        logger.LogInformation("[Repo] Update course {Id}", course.Id);
-        inner.Update(course);
+        _logger.LogInformation("[Repo] Update course {Id}", course.Id);
+
+        _inner.Update(course);
     }
 
     public void Remove(Course course)
     {
-        logger.LogInformation("[Repo] Remove course {Id}", course.Id);
-        inner.Remove(course);
+        _logger.LogInformation("[Repo] Remove course {Id}", course.Id);
+
+        _inner.Remove(course);
     }
 }

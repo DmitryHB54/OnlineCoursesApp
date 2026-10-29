@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OnlineCoursesApp.Monolith.Domain.Entities;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure.Persistence.Configurations;
+
 public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
 {
     public void Configure(EntityTypeBuilder<RefreshToken> builder)

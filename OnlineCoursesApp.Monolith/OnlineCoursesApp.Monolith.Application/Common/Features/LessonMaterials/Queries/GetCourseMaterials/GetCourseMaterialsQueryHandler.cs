@@ -1,16 +1,36 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using OnlineCoursesApp.Monolith.Application.Common.Features.LessonMaterials.Dtos;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
+using OnlineCoursesApp.Monolith.Application.Models;
+using OnlineCoursesApp.Monolith.Domain.Exceptions;
+using OnlineCoursesApp.Monolith.Domain.Repositories;
 
 namespace OnlineCoursesApp.Monolith.Application.Common.Features.LessonMaterials.Queries.GetCourseMaterials;
-public class GetCourseMaterialsQueryHandler(
-    ILessonMaterialRepository lessonMaterialRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<GetCourseMaterialsQuery, List<LessonMaterialDto>>
+
+public class GetCourseMaterialsQueryHandler
+    : IRequestHandler<GetCourseMaterialsQuery, PagedResult<LessonMaterialDto>>
 {
-    public async Task<List<LessonMaterialDto>> Handle(GetCourseMaterialsQuery request, CancellationToken cancellationToken)
+    private readonly ICourseMaterialsPagedReadRepository _lessonMaterialPagedReadRepository;
+    private readonly ICourseRepository _courseRepository;
+
+    public GetCourseMaterialsQueryHandler(
+        ICourseMaterialsPagedReadRepository lessonMaterialPagedReadRepository,
+        ICourseRepository courseRepository)
     {
-        var list = await lessonMaterialRepository.GetByCourseIdAsync(request.CourseId, cancellationToken);
-        return list.Select(m => new LessonMaterialDto(m.Id, m.CourseId, m.Title, m.OrderNumber, m.MaterialType,
-                    m.CreatedAt, m.FileInfo.OriginalName, m.FileInfo.SizeBytes, m.FileInfo.Extension)).ToList();
+        _lessonMaterialPagedReadRepository = lessonMaterialPagedReadRepository;
+        _courseRepository = courseRepository;
+    }
+
+    public async Task<PagedResult<LessonMaterialDto>> Handle(GetCourseMaterialsQuery request, CancellationToken cancellationToken)
+    {
+        var exists = await _courseRepository.ExistsByIdAsync(request.CourseId, cancellationToken);
+        if(!exists)
+            throw new NotFoundException("Course not found.");
+
+        var result = await _lessonMaterialPagedReadRepository
+            .GetByCourseIdAsync(request.CourseId, request.Page, request.PageSize, cancellationToken);
+
+        return result;
     }
 }

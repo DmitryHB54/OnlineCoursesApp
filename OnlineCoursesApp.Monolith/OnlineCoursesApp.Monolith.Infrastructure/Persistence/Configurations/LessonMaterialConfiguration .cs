@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OnlineCoursesApp.Monolith.Domain.Entities;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure.Persistence.Configurations;
+
 public class LessonMaterialConfiguration : IEntityTypeConfiguration<LessonMaterial>
 {
     public void Configure(EntityTypeBuilder<LessonMaterial> builder)

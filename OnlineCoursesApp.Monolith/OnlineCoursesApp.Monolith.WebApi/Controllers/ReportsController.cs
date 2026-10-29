@@ -1,23 +1,29 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OnlineCoursesApp.Monolith.Application.AppConstants;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Reports.Queries.GetCoursesReport;
 
 namespace OnlineCoursesApp.Monolith.WebApi.Controllers;
 
 [ApiController]
 [Route("api/reports")]
-public class ReportsController(
-    IMediator mediator) : ControllerBase
+public class ReportsController : ControllerBase
 {
-    [Authorize(Roles = "Admin,Teacher")]
+    private readonly IMediator _mediator;
+
+    public ReportsController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
+    [Authorize(Roles = RolesConstants.AdminOrTeacher)]
     [HttpGet("courses")]
     [ProducesResponseType(typeof(GetCoursesReportQuery), StatusCodes.Status200OK)]
     public async Task<IActionResult> CoursesReport([FromQuery] DateTime from,
-        [FromQuery] DateTime to,
-        CancellationToken ct)
+        [FromQuery] DateTime to, CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(new GetCoursesReportQuery(from, to), ct);
+        var result = await _mediator.Send(new GetCoursesReportQuery(from, to), cancellationToken);
         return File(result.Content, result.ContentType, result.FileName);
     }
 }

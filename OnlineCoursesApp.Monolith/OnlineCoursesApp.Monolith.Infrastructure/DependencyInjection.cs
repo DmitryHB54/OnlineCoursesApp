@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OnlineCoursesApp.Monolith.Application.Auth;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Domain.Entities;
+using OnlineCoursesApp.Monolith.Domain.Repositories;
 using OnlineCoursesApp.Monolith.Infrastructure.Auth;
 using OnlineCoursesApp.Monolith.Infrastructure.Persistence;
 using OnlineCoursesApp.Monolith.Infrastructure.Persistence.Decorators;
@@ -12,6 +13,7 @@ using OnlineCoursesApp.Monolith.Infrastructure.Persistence.Repositories;
 using OnlineCoursesApp.Monolith.Infrastructure.Storage;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure;
+
 public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
@@ -33,8 +35,13 @@ public static class DependencyInjection
         services.Decorate<ICourseRepository, LoggingCourseRepository>();
         services.Decorate<ICourseRepository, CachedCourseRepository>();
 
-        services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+        services.AddScoped<ICourseFilteredReadRepository, CourseFilteredReadRepository>();
+        services.Decorate<ICourseFilteredReadRepository, LoggingCourseFilteredReadRepository>();
+
         services.AddScoped<ILessonMaterialRepository, LessonMaterialRepository>();
+        services.AddScoped<ICourseMaterialsPagedReadRepository, CourseMaterialsPagedReadRepository>();
+
+        services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
         services.AddScoped<IReportRepository, ReportRepository>();
 
         services.Configure<StorageOptions>(configuration.GetSection(StorageOptions.SectionName));

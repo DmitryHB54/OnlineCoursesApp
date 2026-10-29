@@ -1,4 +1,5 @@
 ﻿namespace OnlineCoursesApp.Monolith.Domain.Enums;
+
 public enum RoleName
 {
     Admin = 1,

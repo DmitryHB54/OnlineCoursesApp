@@ -4,6 +4,7 @@ using OnlineCoursesApp.Monolith.Domain.Entities;
 using OnlineCoursesApp.Monolith.Domain.Enums;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure.Persistence.Configurations;
+
 public class RoleConfiguration : IEntityTypeConfiguration<Role>
 {
     public void Configure(EntityTypeBuilder<Role> builder)

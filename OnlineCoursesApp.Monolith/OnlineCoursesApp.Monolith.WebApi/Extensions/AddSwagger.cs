@@ -1,6 +1,7 @@
 ﻿using Microsoft.OpenApi;
 
 namespace OnlineCoursesApp.Monolith.WebApi.Extensions;
+
 public static class AddSwagger
 {
     public static IServiceCollection AddSwaggerConfig(this IServiceCollection services)
@@ -22,6 +23,21 @@ public static class AddSwagger
                 [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>()
             });
         });
+
         return services;
+    }
+
+    public static IApplicationBuilder UseSwaggerDocumentation(this IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI(cfg =>
+            {
+                cfg.SwaggerEndpoint("swagger/v1/swagger.json", "Online courses API V1");
+                cfg.RoutePrefix = string.Empty;
+            });
+        }
+        return app;
     }
 }

@@ -1,4 +1,5 @@
 ﻿namespace OnlineCoursesApp.Monolith.Domain.Entities;
+
 public class FileInfo
 {
     public string RelativePath { get; set; } = default!;

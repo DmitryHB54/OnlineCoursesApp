@@ -1,39 +1,44 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Dtos;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Domain.Entities;
+using OnlineCoursesApp.Monolith.Domain.Repositories;
 
 namespace OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Commands.CreateCourse;
 
-public class CreateCourseCommandHandler(
-    ICourseRepository courseRepository,
-    ICurrentUserService currentUserService,
-    IUnitOfWork unitOfWork) : IRequestHandler<CreateCourseCommand, CourseDto>
+public class CreateCourseCommandHandler
+    : IRequestHandler<CreateCourseCommand, CourseDto>
 {
+    private readonly ICourseRepository _courseRepository;
+    private readonly ICurrentUserService _currentUserService;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
+
+    public CreateCourseCommandHandler(
+        ICourseRepository courseRepository,
+        ICurrentUserService currentUserService,
+        IUnitOfWork unitOfWork,
+        IMapper mapper) 
+    {
+        _courseRepository = courseRepository;
+        _currentUserService = currentUserService;
+        _unitOfWork = unitOfWork;
+        _mapper = mapper;
+    }
+
     public async Task<CourseDto> Handle(
         CreateCourseCommand request, CancellationToken cancellationToken)
     {
-        var course = new Course
-        {
-            Id = Guid.NewGuid(),
-            Title = request.Title.Trim(),
-            Description = request.Description.Trim(),
-            Category = request.Category,
-            Price = request.Price,
-            AuthorId = currentUserService.UserId,
-            CreatedAt = DateTimeOffset.UtcNow
-        };
+        var course = _mapper.Map<Course>(request);
 
-        await courseRepository.AddAsync(course, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        course.Id = Guid.NewGuid();
+        course.AuthorId = _currentUserService.UserId;
+        course.CreatedAt = DateTimeOffset.UtcNow;
 
-        return new CourseDto(
-            course.Id,
-            course.Title,
-            course.Description,
-            course.AuthorId,
-            course.Category,
-            course.Price,
-            course.CreatedAt);
+        await _courseRepository.AddAsync(course, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return _mapper.Map<CourseDto>(course);
     }
 }

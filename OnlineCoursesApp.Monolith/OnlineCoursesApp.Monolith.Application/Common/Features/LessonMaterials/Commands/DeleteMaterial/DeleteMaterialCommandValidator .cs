@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 
 namespace OnlineCoursesApp.Monolith.Application.Common.Features.LessonMaterials.Commands.DeleteMaterial;
+
 public class DeleteMaterialCommandValidator : AbstractValidator<DeleteMaterialCommand>
 {
     public DeleteMaterialCommandValidator()

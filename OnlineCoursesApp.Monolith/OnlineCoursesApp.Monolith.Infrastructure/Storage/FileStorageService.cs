@@ -3,6 +3,7 @@ using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using System.IO.Compression;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure.Storage;
+
 public class FileStorageService : IFileStorageService
 {
     private static readonly HashSet<string> AllowedExtensions = new(StringComparer.OrdinalIgnoreCase)
@@ -11,6 +12,7 @@ public class FileStorageService : IFileStorageService
     };
 
     private readonly string _rootPath;
+
     public FileStorageService(IOptions<StorageOptions> options)
     {
         _rootPath = Path.GetFullPath(options.Value.RootPath);
@@ -22,7 +24,9 @@ public class FileStorageService : IFileStorageService
     {
         var extension = Path.GetExtension(originalFileName).ToLowerInvariant();
         if (!AllowedExtensions.Contains(extension))
+        {
             throw new InvalidOperationException($"Extension '{extension}' isn't supported.");
+        }
 
         var courseFolder = Path.Combine(_rootPath, courseId.ToString());
         Directory.CreateDirectory(courseFolder);
@@ -39,39 +43,51 @@ public class FileStorageService : IFileStorageService
         var size = new FileInfo(absolutePath).Length;
         return new StoredFileResult(relativePath, size, extension);
     }
+
     public Task<Stream> OpeanReadAsync(string relativePath, CancellationToken cancellationToken)
     {
         string absolutePath = ResolveSafePath(relativePath);
         if (!File.Exists(absolutePath))
+        {
             throw new FileNotFoundException("File not found on disk.", absolutePath);
+        }
 
         Stream stream = File.OpenRead(absolutePath);
         return Task.FromResult(stream);
     }
+
     public Task DeleteAsync(string relativePath, CancellationToken cancellationToken)
     {
         string absolutePath = ResolveSafePath(relativePath);
         if (File.Exists(absolutePath))
+        {
             File.Delete(absolutePath);
+        }
+
         return Task.CompletedTask;
     }
+
     public Task DeleteCourseFolderAsync(Guid courseId, CancellationToken cancellationToken)
     {
         string folder = Path.Combine(_rootPath, courseId.ToString());
         if (Directory.Exists(folder))
+        {
             Directory.Delete(folder, recursive: true);
+        }
+
         return Task.CompletedTask;
     }
 
     public Task<Stream> CreateCourseArchiveAsync(Guid courseId, IEnumerable<string> relativePaths, CancellationToken cancellationToken)
     {
         var ms = new MemoryStream();
+
         using(var archive = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
         {
             foreach(var relPath in relativePaths)
             {
                 var absolutePath = ResolveSafePath(relPath);
-                if (!File.Exists(absolutePath)) continue;
+                if (!File.Exists(absolutePath)) { continue; }
 
                 var entryName = Path.GetFileName(relPath);
                 var entry = archive.CreateEntry(entryName, CompressionLevel.Optimal);
@@ -80,6 +96,7 @@ public class FileStorageService : IFileStorageService
                 source.CopyTo(entryStream);
             }
         }
+
         ms.Position = 0;
         return Task.FromResult<Stream>(ms);
     }
@@ -87,8 +104,12 @@ public class FileStorageService : IFileStorageService
     private string ResolveSafePath(string relativePath)
     {
         var absolute = Path.GetFullPath(Path.Combine(_rootPath, relativePath));
+
         if (!absolute.StartsWith(_rootPath, StringComparison.OrdinalIgnoreCase))
+        {
             throw new InvalidOperationException("Attempt to exit the storage limits.");
+        }
+
         return absolute;
     }
 }

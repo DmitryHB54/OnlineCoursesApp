@@ -1,33 +1,44 @@
-﻿using MediatR;
-using CsvHelper;
+﻿using CsvHelper;
 using CsvHelper.Configuration;
-using System.Globalization;
-using System.Text;
+using MediatR;
+using OnlineCoursesApp.Monolith.Application.AppConstants;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Reports.Dtos;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Domain.Enums;
+using System.Globalization;
+using System.Text;
 
 namespace OnlineCoursesApp.Monolith.Application.Common.Features.Reports.Queries.GetCoursesReport;
 
-public class GetCoursesReportQueryHandler(
-    IReportRepository reportRepository,
-    ICurrentUserService currentUserService) : IRequestHandler<GetCoursesReportQuery, CoursesReportFile>
+public class GetCoursesReportQueryHandler
+    : IRequestHandler<GetCoursesReportQuery, CoursesReportFile>
 {
+    private readonly IReportRepository _reportRepository;
+    private readonly ICurrentUserService _currentUserService;
+
+    public GetCoursesReportQueryHandler(
+        IReportRepository reportRepository,
+        ICurrentUserService currentUserService)
+    {
+        _reportRepository = reportRepository;
+        _currentUserService = currentUserService;
+    }
+
     public async Task<CoursesReportFile> Handle(GetCoursesReportQuery request, CancellationToken cancellationToken)
     {
-        Guid? authorFilter = currentUserService.Role == RoleName.Teacher
-            ? currentUserService.UserId : null;
+        Guid? authorFilter = _currentUserService.Role == RoleName.Teacher
+            ? _currentUserService.UserId : null;
 
-        var rows = await reportRepository.GetCourseStatsAsync(
+        var rows = await _reportRepository.GetCourseStatsAsync(
              request.From.ToUniversalTime(),
              request.To.ToUniversalTime(),
              authorFilter,
              cancellationToken);
 
         var bytes = BuildCsv(rows);
-
         var fileName = $"courses-report-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss-fff}.csv";
-        return new CoursesReportFile(bytes, fileName, "text/csv;");
+
+        return new CoursesReportFile(bytes, fileName, FilesConstants.CsvMimeType);
     }
 
     private static byte[] BuildCsv(List<CourseReportRowDto> rows)
@@ -56,7 +67,6 @@ public class GetCoursesReportQueryHandler(
         }
 
         var csvString = stringWriter.ToString();
-
         var contentBytes = Encoding.UTF8.GetBytes(csvString);
         var bomBytes = Encoding.UTF8.GetPreamble();
 
@@ -70,6 +80,7 @@ public class GetCoursesReportQueryHandler(
     private static string SafeCell(string value)
     {
         if (string.IsNullOrEmpty(value)) return value;
+
         return value[0] is '=' or '+' or '-' or '@' ? "'" + value : value;
     }
 }

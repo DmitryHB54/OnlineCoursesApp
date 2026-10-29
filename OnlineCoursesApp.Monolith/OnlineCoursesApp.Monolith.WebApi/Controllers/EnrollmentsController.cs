@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OnlineCoursesApp.Monolith.Application.AppConstants;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Dtos;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Enrollments.Commands.CancelEnrollment;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Enrollments.Commands.EnrollInCourse;
@@ -11,35 +12,42 @@ namespace OnlineCoursesApp.Monolith.WebApi.Controllers;
 
 [ApiController]
 [Route("api")]
-public class EnrollmentsController(IMediator mediator) : ControllerBase
+public class EnrollmentsController : ControllerBase
 {
-    [Authorize(Roles = "Student")]
-    [HttpPost("courses/{courseId:guid}/enroll")]
+    private readonly IMediator _mediator;
+
+    public EnrollmentsController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
+    [Authorize(Roles = RolesConstants.Student)]
+    [HttpPost("courses/{courseId:guid}/enrollment")]
     [ProducesResponseType(typeof(EnrollmentDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Enroll(Guid courseId, CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(new EnrollInCourseCommand(courseId), cancellationToken);
+        var result = await _mediator.Send(new EnrollInCourseCommand(courseId), cancellationToken);
         return Ok(result);
     }
 
-    [Authorize(Roles = "Student")]
-    [HttpDelete("courses/{courseId:guid}/enroll")]
+    [Authorize(Roles = RolesConstants.Student)]
+    [HttpDelete("courses/{courseId:guid}/enrollment")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> Cancel(Guid courseId, CancellationToken ct)
+    public async Task<IActionResult> Cancel(Guid courseId, CancellationToken cancellationToken)
     {
-        await mediator.Send(new CancelEnrollmentCommand(courseId), ct);
+        await _mediator.Send(new CancelEnrollmentCommand(courseId), cancellationToken);
         return NoContent();
     }
 
-    [Authorize(Roles = "Student")]
+    [Authorize(Roles = RolesConstants.Student)]
     [HttpGet("me/courses")]
     [ProducesResponseType(typeof(List<CourseDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> MyCourses(CancellationToken ct)
+    public async Task<IActionResult> MyCourses(CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(new GetMyCoursesQuery(), ct);
+        var result = await _mediator.Send(new GetMyCoursesQuery(), cancellationToken);
         return Ok(result);
     }
 }

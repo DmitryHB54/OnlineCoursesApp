@@ -1,27 +1,47 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Domain.Entities;
+using OnlineCoursesApp.Monolith.Domain.Repositories;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure.Persistence.Repositories;
-public class EnrollmentRepository(
-    AppDbContext dbContext) : IEnrollmentRepository
+
+public class EnrollmentRepository : IEnrollmentRepository
 {
-    public Task<bool> ExistsAsync(Guid userId, Guid courseId, CancellationToken ct)
-        => dbContext.Enrollments.AnyAsync(e => e.UserId == userId && e.CourseId == courseId, ct);
-    public Task<Enrollment?> GetAsync(Guid userId, Guid courseId, CancellationToken ct)
-        => dbContext.Enrollments
-            .FirstOrDefaultAsync(e => e.UserId == userId && e.CourseId == courseId, ct);
-    public Task<List<Course>> GetUserCoursesAsync(Guid userId, CancellationToken ct)
-        => dbContext.Enrollments
+    private readonly AppDbContext _dbContext;
+
+    public EnrollmentRepository(
+        AppDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+
+    public Task<bool> ExistsAsync(Guid userId, Guid courseId, CancellationToken cancellationToken)
+    { 
+        return _dbContext.Enrollments.AnyAsync(e => e.UserId == userId && e.CourseId == courseId, cancellationToken);
+    }
+
+    public Task<Enrollment?> GetAsync(Guid userId, Guid courseId, CancellationToken cancellationToken)
+    { 
+        return _dbContext.Enrollments
+            .FirstOrDefaultAsync(e => e.UserId == userId && e.CourseId == courseId, cancellationToken);
+    }
+
+    public Task<List<Course>> GetUserCoursesAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return _dbContext.Enrollments
             .AsNoTracking()
             .Where(e => e.UserId == userId)
             .Select(e => e.Course)
             .OrderByDescending(c => c.CreatedAt)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
+    }
 
-    public async Task AddAsync(Enrollment enrollment, CancellationToken ct)
-        => await dbContext.Enrollments.AddAsync(enrollment, ct);
+    public async Task AddAsync(Enrollment enrollment, CancellationToken cancellationToken)
+    {
+        await _dbContext.Enrollments.AddAsync(enrollment, cancellationToken);
+    }
 
     public void Remove(Enrollment enrollment)
-        => dbContext.Enrollments.Remove(enrollment);
+    {
+        _dbContext.Enrollments.Remove(enrollment);
+    }
 }

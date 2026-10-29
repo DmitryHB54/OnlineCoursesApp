@@ -1,17 +1,21 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Text;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using OnlineCoursesApp.Monolith.Application.Auth;
 using OnlineCoursesApp.Monolith.Domain.Entities;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure.Auth;
+
 internal class JwtTokenService : IJwtTokenService
 {
     private readonly JwtOptions _options;
 
-    public JwtTokenService(IOptions<JwtOptions> options) => _options = options.Value;
+    public JwtTokenService(IOptions<JwtOptions> options)
+    { 
+        _options = options.Value;
+    } 
 
     public (string Token, DateTime ExpiresAt) Generate(User user)
     {

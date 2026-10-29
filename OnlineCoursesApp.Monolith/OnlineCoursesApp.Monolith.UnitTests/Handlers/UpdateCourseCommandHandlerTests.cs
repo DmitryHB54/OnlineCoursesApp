@@ -1,12 +1,14 @@
-﻿using FluentAssertions;
-using Moq;
+﻿using Moq;
+using FluentAssertions;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Commands.UpdateCourse;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Domain.Entities;
 using OnlineCoursesApp.Monolith.Domain.Enums;
 using OnlineCoursesApp.Monolith.Domain.Exceptions;
+using OnlineCoursesApp.Monolith.Domain.Repositories;
 
 namespace OnlineCoursesApp.Monolith.UnitTests.Handlers;
+
 public class UpdateCourseCommandHandlerTests
 {
     private readonly Mock<ICourseRepository> _courseRepoMock = new();
@@ -25,7 +27,7 @@ public class UpdateCourseCommandHandlerTests
         // Arrange
         var courseId = Guid.NewGuid();
         var teacherId = Guid.NewGuid();
-        var foreignAuthorId = Guid.NewGuid(); // Другой учитель
+        var foreignAuthorId = Guid.NewGuid(); 
 
         var existingCourse = new Course { Id = courseId, AuthorId = foreignAuthorId };
 
@@ -56,7 +58,7 @@ public class UpdateCourseCommandHandlerTests
         _courseRepoMock.Setup(r => r.GetByIdForUpdateAsync(courseId, It.IsAny<CancellationToken>()))
                         .ReturnsAsync(existingCourse);
 
-        _currentUserMock.Setup(u => u.Role).Returns(RoleName.Admin); // Админ
+        _currentUserMock.Setup(u => u.Role).Returns(RoleName.Admin); 
 
         var command = new UpdateCourseCommand(courseId, "New Title", "Desc", CourseCategory.Development, 100);
 

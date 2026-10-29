@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 
 namespace OnlineCoursesApp.Monolith.Application.Auth.Commands.Login;
+
 public class LoginCommandValidator : AbstractValidator<LoginCommand>
 {
     public LoginCommandValidator()

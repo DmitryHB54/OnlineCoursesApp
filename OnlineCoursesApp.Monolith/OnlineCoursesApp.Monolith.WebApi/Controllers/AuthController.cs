@@ -9,16 +9,23 @@ namespace OnlineCoursesApp.Monolith.WebApi.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController(IMediator mediator) : ControllerBase
+public class AuthController : ControllerBase
 {
-    [HttpPost("register")]
+    private readonly IMediator _mediator;
+
+    public AuthController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
+    [HttpPost("registration")]
     [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Register([FromBody] RegisterCommand command, CancellationToken ct)
+    public async Task<IActionResult> Register([FromBody] RegisterCommand command, CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(command, ct);
+        var result = await _mediator.Send(command, cancellationToken);
         return Ok(result);
     }
 
@@ -28,20 +35,20 @@ public class AuthController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login(
-        [FromBody] LoginCommand command, CancellationToken ct)
+        [FromBody] LoginCommand command, CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(command, ct);
+        var result = await _mediator.Send(command, cancellationToken);
         return Ok(result);
     }
 
-    [HttpPost("refresh")]
+    [HttpPost("refreshing")]
     [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Refresh(
-        [FromBody] RefreshCommand command, CancellationToken ct)
+        [FromBody] RefreshCommand command, CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(command, ct);
+        var result = await _mediator.Send(command, cancellationToken);
         return Ok(result);
     }
 }

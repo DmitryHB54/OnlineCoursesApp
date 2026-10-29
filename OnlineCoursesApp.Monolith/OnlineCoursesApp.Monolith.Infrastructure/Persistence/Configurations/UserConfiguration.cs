@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OnlineCoursesApp.Monolith.Domain.Entities;
 
 namespace OnlineCoursesApp.Monolith.Infrastructure.Persistence.Configurations;
+
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
