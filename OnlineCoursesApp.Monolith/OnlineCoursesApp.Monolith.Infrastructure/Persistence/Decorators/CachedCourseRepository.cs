@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using OnlineCoursesApp.Monolith.Application.Models;
 using OnlineCoursesApp.Monolith.Domain.Entities;
 using OnlineCoursesApp.Monolith.Domain.Repositories;
 
@@ -44,6 +43,11 @@ public class CachedCourseRepository : ICourseRepository
         return course;
     }
 
+    public Task<bool> ExistsByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return _inner.ExistsByIdAsync(id, cancellationToken);
+    }
+
     public Task<Course?> GetByIdForUpdateAsync(Guid id, CancellationToken cancellationToken)
     { 
         return _inner.GetByIdForUpdateAsync(id, cancellationToken);    
@@ -73,4 +77,5 @@ public class CachedCourseRepository : ICourseRepository
 
         _inner.Remove(course);
     }
+
 }

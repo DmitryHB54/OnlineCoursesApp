@@ -31,6 +31,12 @@ public class LoggingCourseRepository : ICourseRepository
         return result; 
     }
 
+    public Task<bool> ExistsByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("[Repo] ExistsByIdAsync({id})", id);
+        return _inner.ExistsByIdAsync(id, cancellationToken);
+    }
+
     public async Task<Course?> GetByIdForUpdateAsync(Guid id, CancellationToken cancellationToken)
     {
         _logger.LogInformation("[Repo] GetByIdForUpdateAsync({id})", id);

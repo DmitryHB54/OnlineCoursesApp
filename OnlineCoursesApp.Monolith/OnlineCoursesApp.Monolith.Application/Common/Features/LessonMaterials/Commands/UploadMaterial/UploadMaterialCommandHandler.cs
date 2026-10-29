@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using OnlineCoursesApp.Monolith.Application.Common.Features.LessonMaterials.Dtos;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Domain.Entities;
@@ -16,19 +17,22 @@ public class UploadMaterialCommandHandler
     private readonly IUnitOfWork _unitOfWork;
     private readonly IFileStorageService _fileStorageService;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IMapper _mapper;
 
     public UploadMaterialCommandHandler(
         ILessonMaterialRepository lessonMaterialRepository,
         ICourseRepository courseRepository,
         IUnitOfWork unitOfWork,
         IFileStorageService fileStorageService,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IMapper mapper)
     {
         _lessonMaterialRepository = lessonMaterialRepository;
         _courseRepository = courseRepository;
         _unitOfWork = unitOfWork;
         _fileStorageService = fileStorageService;
         _currentUserService = currentUserService;
+        _mapper = mapper;
     }
 
     public async Task<LessonMaterialDto> Handle(UploadMaterialCommand request, CancellationToken cancellationToken)
@@ -36,7 +40,7 @@ public class UploadMaterialCommandHandler
         var course = await _courseRepository.GetByIdAsync(request.CourseId, cancellationToken)
             ?? throw new NotFoundException("Course not found");
 
-        if(_currentUserService.Role == RoleName.Teacher && _currentUserService.UserId != course.AuthorId)
+        if(_currentUserService is { Role: RoleName.Teacher } && _currentUserService.UserId != course.AuthorId)
         {
             throw new ForbiddenException("It's prohibited to add content to someone else's course.");
         }
@@ -64,10 +68,6 @@ public class UploadMaterialCommandHandler
         await _lessonMaterialRepository.AddAsync(material, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return new LessonMaterialDto(
-            material.Id, material.CourseId, material.Title,
-            material.OrderNumber, material.MaterialType, material.CreatedAt,
-            material.FileInfo.OriginalName, material.FileInfo.SizeBytes,
-            material.FileInfo.Extension);
+        return _mapper.Map<LessonMaterialDto>(material);
     }
 }

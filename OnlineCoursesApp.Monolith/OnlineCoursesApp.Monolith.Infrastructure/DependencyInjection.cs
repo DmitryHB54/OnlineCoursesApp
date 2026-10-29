@@ -38,8 +38,10 @@ public static class DependencyInjection
         services.AddScoped<ICourseFilteredReadRepository, CourseFilteredReadRepository>();
         services.Decorate<ICourseFilteredReadRepository, LoggingCourseFilteredReadRepository>();
 
-        services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
         services.AddScoped<ILessonMaterialRepository, LessonMaterialRepository>();
+        services.AddScoped<ICourseMaterialsPagedReadRepository, CourseMaterialsPagedReadRepository>();
+
+        services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
         services.AddScoped<IReportRepository, ReportRepository>();
 
         services.Configure<StorageOptions>(configuration.GetSection(StorageOptions.SectionName));

@@ -22,6 +22,12 @@ public class CourseRepository : ICourseRepository
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
 
+    public Task<bool> ExistsByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return _dbContext.Cources
+            .AnyAsync(c => c.Id == id, cancellationToken);
+    }
+
     public Task<Course?> GetByIdForUpdateAsync(Guid id, CancellationToken cancellationToken)
     {
         return _dbContext.Cources
@@ -41,5 +47,6 @@ public class CourseRepository : ICourseRepository
     public void Remove(Course course)
     { 
         _dbContext.Cources.Remove(course);
-    } 
+    }
+
 }

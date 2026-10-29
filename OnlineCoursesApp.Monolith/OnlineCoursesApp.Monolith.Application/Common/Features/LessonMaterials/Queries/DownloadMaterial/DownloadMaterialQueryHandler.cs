@@ -46,28 +46,27 @@ public class DownloadMaterialQueryHandler
 
     private async Task<bool> HasAccessAsync(LessonMaterial material, CancellationToken cancellationToken)
     {
-        switch(_currentUserService.Role)
+        return _currentUserService.Role switch
         {
-            case RoleName.Admin:
-                return true;
-            case RoleName.Teacher:
-                return material.Course.AuthorId == _currentUserService.UserId;
-            case RoleName.Student:
-                return await _enrollmentRepository.ExistsAsync(
-                    _currentUserService.UserId, material.CourseId, cancellationToken);
-            default:
-                return false;
-        }
+            RoleName.Admin => true,
+            RoleName.Teacher => material.Course.AuthorId == _currentUserService.UserId,
+            RoleName.Student => await _enrollmentRepository.ExistsAsync(
+                    _currentUserService.UserId, material.CourseId, cancellationToken),
+            _ => false
+        };
     }
 
-    private static string GetContentType(string ext) => ext.ToLowerInvariant() switch
+    private static string GetContentType(string ext)
     {
-        ".pdf" => "application/pdf",
-        ".jpg" or ".jpeg" => "image/jpeg",
-        ".png" => "image/png",
-        ".webp" => "image/webp",
-        ".doc" => "application/msword",
-        ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        _ => "application/octet-stream"
-    };
+        return ext.ToLowerInvariant() switch
+        {
+            ".pdf" => "application/pdf",
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".webp" => "image/webp",
+            ".doc" => "application/msword",
+            ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            _ => "application/octet-stream"
+        };
+    }
 }

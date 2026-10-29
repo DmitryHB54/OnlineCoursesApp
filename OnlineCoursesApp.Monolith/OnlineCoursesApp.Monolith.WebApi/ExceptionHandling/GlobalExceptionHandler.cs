@@ -22,7 +22,7 @@ public class GlobalExceptionHandler : IExceptionHandler
     {
         _logger.LogError(exception, "Unhandled exception: {Message}", exception.Message);
 
-        ProblemDetails problemDetails = exception switch
+        var problemDetails = exception switch
         {
             ValidationException validationException => CreateValidationProblem(validationException),
             NotFoundException notFoundException => CreateNotFoundProblem(notFoundException),

@@ -24,7 +24,7 @@ public class CancelEnrollmentCommandHandler : IRequestHandler<CancelEnrollmentCo
 
     public async Task<Unit> Handle(CancelEnrollmentCommand request, CancellationToken cancellationToken)
     {
-        if(_currentUserService.Role != RoleName.Student)
+        if(_currentUserService is not { Role: RoleName.Student })
         { 
             throw new ForbiddenException("Only the student can unsubscribe from the course.");
         }

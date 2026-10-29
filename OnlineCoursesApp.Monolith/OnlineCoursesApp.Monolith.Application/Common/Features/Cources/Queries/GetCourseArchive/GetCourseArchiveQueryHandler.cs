@@ -32,12 +32,12 @@ public class GetCourseArchiveQueryHandler
         var course = await _courseRepository.GetByIdAsync(request.CourseId, cancellationToken)
             ?? throw new NotFoundException("Course not found");
 
-        if (_currentUserService.Role == RoleName.Student)
+        if (_currentUserService is { Role: RoleName.Student })
         {
             throw new ForbiddenException("The archive is only available to Admin and Teacher.");
         }
 
-        if (_currentUserService.Role == RoleName.Teacher
+        if (_currentUserService is { Role: RoleName.Teacher }
             && course.AuthorId != _currentUserService.UserId)
         {
             throw new ForbiddenException("It's prohibited to download the archive of someone else's course.");

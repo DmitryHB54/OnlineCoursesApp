@@ -1,9 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OnlineCoursesApp.Monolith.Application.AppConstants;
 using OnlineCoursesApp.Monolith.Application.Common.Features.LessonMaterials.Commands.UploadMaterial;
 using OnlineCoursesApp.Monolith.Application.Common.Features.LessonMaterials.Dtos;
 using OnlineCoursesApp.Monolith.Application.Common.Features.LessonMaterials.Queries.GetCourseMaterials;
+using OnlineCoursesApp.Monolith.Application.Models;
 using OnlineCoursesApp.Monolith.Domain.Enums;
 
 namespace OnlineCoursesApp.Monolith.WebApi.Controllers;
@@ -20,16 +22,18 @@ public class CourseMaterialsController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(List<LessonMaterialDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> List(Guid courseId, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(PagedResult<LessonMaterialDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> List(Guid courseId, CancellationToken cancellationToken, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var result = await _mediator.Send(new GetCourseMaterialsQuery(courseId), cancellationToken);
+        var result = await _mediator.Send(new GetCourseMaterialsQuery(courseId, page, pageSize), cancellationToken);
         return Ok(result);
     }
 
-    [Authorize(Roles = "Admin,Teacher")]
-    [RequestSizeLimit(20 * 1024 * 1024)]
+    [Authorize(Roles = RolesConstants.AdminOrTeacher)]
     [HttpPost]
+    [RequestSizeLimit(FilesConstants.MaxFileSizeBytes)]
     [ProducesResponseType(typeof(LessonMaterialDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Upload(Guid courseId, [FromForm] string title,

@@ -30,7 +30,7 @@ public class DeleteMaterialCommandHandler : IRequestHandler<DeleteMaterialComman
         var material = await _lessonMaterialRepository.GetByIdWithCourseAsync(request.Id, cancellationToken)
            ?? throw new NotFoundException("Material not found.");
 
-        if (_currentUserService.Role == RoleName.Teacher && material.Course.AuthorId != request.Id) 
+        if (_currentUserService is { Role: RoleName.Teacher } && material.Course.AuthorId != request.Id) 
         {
             throw new ForbiddenException("It's prohibited to delete someone else's course content.");
         }

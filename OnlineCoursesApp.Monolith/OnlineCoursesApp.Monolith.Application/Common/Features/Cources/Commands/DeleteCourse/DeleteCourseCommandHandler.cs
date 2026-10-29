@@ -31,7 +31,7 @@ public class DeleteCourseCommandHandler
         var course = await _courseRepository.GetByIdForUpdateAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException("Course not found");
 
-        if (_currentUserService.Role == RoleName.Teacher && course.AuthorId != _currentUserService.UserId)
+        if (_currentUserService is { Role: RoleName.Teacher } && course.AuthorId != _currentUserService.UserId)
         { 
             throw new ForbiddenException("You can't delete someone else's course");
         }

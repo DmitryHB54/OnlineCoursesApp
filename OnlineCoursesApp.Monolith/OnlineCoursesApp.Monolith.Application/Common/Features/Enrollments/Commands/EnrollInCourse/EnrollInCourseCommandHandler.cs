@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Enrollments.Dtos;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Domain.Entities;
@@ -15,22 +16,25 @@ public class EnrollInCourseCommandHandler
     private readonly ICurrentUserService _currentUserService;
     private readonly IEnrollmentRepository _enrollmentRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
     public EnrollInCourseCommandHandler(
         ICourseRepository courseRepository,
         ICurrentUserService currentUserService,
         IEnrollmentRepository enrollmentRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IMapper mapper)
     {
         _courseRepository = courseRepository;
         _currentUserService = currentUserService;
         _enrollmentRepository = enrollmentRepository;
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     public async Task<EnrollmentDto> Handle(EnrollInCourseCommand request, CancellationToken cancellationToken)
     {
-        if (_currentUserService.Role != RoleName.Student)
+        if (_currentUserService is not { Role: RoleName.Student })
         {
             throw new ForbiddenException("Only student can enroll in course.");
         }
@@ -56,6 +60,6 @@ public class EnrollInCourseCommandHandler
         await _enrollmentRepository.AddAsync(enrollement, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return new EnrollmentDto(course.Id, course.Title, enrollement.EnrolledAt);
+        return _mapper.Map<EnrollmentDto>(enrollement);
     }
 }

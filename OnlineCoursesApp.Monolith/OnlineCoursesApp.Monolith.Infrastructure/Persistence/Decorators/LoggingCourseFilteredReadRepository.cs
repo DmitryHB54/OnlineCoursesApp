@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Dtos;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Application.Models;
 using OnlineCoursesApp.Monolith.Domain.Entities;
@@ -20,7 +21,7 @@ public class LoggingCourseFilteredReadRepository : ICourseFilteredReadRepository
         _logger = logger;
     }
 
-    public async Task<PagedResult<Course>> GetFilteredAsync(CourseFilter filter, CancellationToken cancellationToken)
+    public async Task<PagedResult<CourseDto>> GetFilteredAsync(CourseFilter filter, CancellationToken cancellationToken)
     {
         _logger.LogInformation("[Repo] GetFiltered(category={Category}, author={AuthorId}, search={Search}, page={Page}, size={Size})",
             filter.Category, filter.AuthorId, filter.Search, filter.Page, filter.PageSize);

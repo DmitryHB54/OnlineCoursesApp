@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
+using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Dtos;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Application.Models;
 using OnlineCoursesApp.Monolith.Domain.Entities;
@@ -8,14 +11,17 @@ namespace OnlineCoursesApp.Monolith.Infrastructure.Persistence.Repositories;
 public class CourseFilteredReadRepository : ICourseFilteredReadRepository
 {
     private readonly AppDbContext _dbContext;
+    private readonly IMapper _mapper;
 
     public CourseFilteredReadRepository(
-        AppDbContext dbContext)
+        AppDbContext dbContext,
+        IMapper mapper)
     {
         _dbContext = dbContext;
+        _mapper = mapper;
     }
 
-    public async Task<PagedResult<Course>> GetFilteredAsync(CourseFilter filter, CancellationToken cancellationToken)
+    public async Task<PagedResult<CourseDto>> GetFilteredAsync(CourseFilter filter, CancellationToken cancellationToken)
     {
         var query = _dbContext.Cources.AsNoTracking().AsQueryable();
 
@@ -51,8 +57,9 @@ public class CourseFilteredReadRepository : ICourseFilteredReadRepository
         var items = await query
             .Skip((filter.Page - 1) * filter.PageSize)
             .Take(filter.PageSize)
+            .ProjectTo<CourseDto>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
-        return new PagedResult<Course>(items, filter.Page, filter.PageSize, total);
+        return new PagedResult<CourseDto>(items, filter.Page, filter.PageSize, total);
     }
 }
