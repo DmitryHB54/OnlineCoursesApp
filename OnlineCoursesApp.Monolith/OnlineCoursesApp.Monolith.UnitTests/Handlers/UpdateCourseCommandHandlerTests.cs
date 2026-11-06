@@ -1,11 +1,14 @@
 ﻿using Moq;
+using AutoMapper;
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using OnlineCoursesApp.Monolith.Application.Common.Features.Cources.Commands.UpdateCourse;
 using OnlineCoursesApp.Monolith.Application.Common.Interfaces;
 using OnlineCoursesApp.Monolith.Domain.Entities;
 using OnlineCoursesApp.Monolith.Domain.Enums;
 using OnlineCoursesApp.Monolith.Domain.Exceptions;
 using OnlineCoursesApp.Monolith.Domain.Repositories;
+using OnlineCoursesApp.Monolith.Application.MappingProfile;
 
 namespace OnlineCoursesApp.Monolith.UnitTests.Handlers;
 
@@ -14,11 +17,19 @@ public class UpdateCourseCommandHandlerTests
     private readonly Mock<ICourseRepository> _courseRepoMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWork = new();
     private readonly Mock<ICurrentUserService> _currentUserMock = new();
+    private readonly IMapper _mapper;
     private readonly UpdateCourseCommandHandler _handler;
 
     public UpdateCourseCommandHandlerTests()
     {
-        _handler = new UpdateCourseCommandHandler(_courseRepoMock.Object, _unitOfWork.Object, _currentUserMock.Object);
+        var mapperConfiguration = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile<CourseProfile>();
+        }, NullLoggerFactory.Instance);
+
+        _mapper = mapperConfiguration.CreateMapper();
+
+        _handler = new UpdateCourseCommandHandler(_courseRepoMock.Object, _unitOfWork.Object, _currentUserMock.Object, _mapper);
     }
 
     [Fact]
